@@ -17,6 +17,7 @@ class User {
         active field: 'active'
 
         version false
+        cache true
     }
 
     static constraints = {

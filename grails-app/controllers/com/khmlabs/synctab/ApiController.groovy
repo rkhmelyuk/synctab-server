@@ -4,8 +4,26 @@ import grails.converters.JSON
 
 class ApiController {
 
+    AuthService authService
     UserService userService
     SharedTabService sharedTabService
+
+    def beforeInterceptor = [
+            action: this.&auth,
+            except: ['register', 'authorize']]
+
+    boolean auth() {
+        def token = params.token
+        def user = authService.getUserByToken(token)
+        if (!user) {
+            response.sendError 401
+            return false
+        }
+
+        session.user = user
+
+        return true
+    }
 
     def register = {
         if (request.method != 'POST') {
@@ -24,6 +42,29 @@ class ApiController {
         }
 
         render([status: status] as JSON)
+    }
+
+    def authorize = {
+        if (request.method != 'POST') {
+            response.sendError 405
+            return
+        }
+
+        final String email = params.email?.trim()
+        final String password = params.password?.trim()
+
+        boolean status = false
+        String tokenKey = null
+
+        final User user = userService.getUser(email, password)
+        if (user != null && user.active) {
+            AuthToken token = authService.auth(user)
+            if (token) {
+                status = true
+                tokenKey = token.id
+            }
+        }
+        render([status: status, token: tokenKey] as JSON)
     }
 
     def shareTab = {
@@ -66,7 +107,7 @@ class ApiController {
         }
 
         def result = new ArrayList<Map>(tabs.size());
-        for (SharedTab each : tabs) {
+        for (SharedTab each: tabs) {
             def map = [
                     title: each.title ?: "",
                     link: each.link,
