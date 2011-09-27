@@ -14,12 +14,12 @@ class AuthService {
     AuthToken auth(User user) {
         final AuthToken token = new AuthToken()
 
-        token.id = KeyGenerator.generateSimpleKey(TOKEN_KEY_LENGTH)
+        token.token = KeyGenerator.generateSimpleKey(TOKEN_KEY_LENGTH)
         token.timestamp = System.currentTimeMillis()
         token.endTimestamp = token.timestamp + MAX_TOKEN_TIME
         token.userId = user.id
 
-        return token.save()
+        return token.save(true)
     }
 
     void discard(AuthToken token) {
@@ -30,7 +30,7 @@ class AuthService {
 
     AuthToken getAuthToken(String key) {
         //noinspection GroovyAssignabilityCheck
-        return AuthToken.get(key)
+        return AuthToken.findByToken(key)
     }
 
     User getUserByToken(String key) {

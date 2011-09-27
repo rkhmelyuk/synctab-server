@@ -34,7 +34,10 @@ class UserService {
     }
 
     User getUserByEmail(String email) {
-        User.findByEmail(email)
+        if (email) {
+            return User.findByEmail(email)
+        }
+        return null
     }
 
     User getUser(String email, String password) {

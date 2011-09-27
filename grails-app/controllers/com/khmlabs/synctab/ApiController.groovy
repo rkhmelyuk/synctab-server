@@ -61,7 +61,7 @@ class ApiController {
             AuthToken token = authService.auth(user)
             if (token) {
                 status = true
-                tokenKey = token.id
+                tokenKey = token.token
             }
         }
         render([status: status, token: tokenKey] as JSON)
