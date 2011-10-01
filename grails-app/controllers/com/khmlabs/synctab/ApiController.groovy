@@ -67,6 +67,22 @@ class ApiController {
         render([status: status, token: tokenKey] as JSON)
     }
 
+    def logout = {
+        if (request.method != 'POST') {
+            response.sendError 405
+            return
+        }
+
+        final String tokenKey = params.token
+
+        boolean status = false
+        if (tokenKey) {
+            AuthToken token = authService.getAuthToken(tokenKey)
+            status = authService.discard(token)
+        }
+        render([status: status] as JSON)
+    }
+
     def shareTab = {
         if (request.method != 'POST') {
             response.sendError 405
@@ -98,7 +114,7 @@ class ApiController {
         def date = new Date(timestamp)
         def tabs = sharedTabService.getSharedTabs(date)
 
-        render(prepareTabs(tabs) as JSON)
+        render([status: true, tabs: prepareTabs(tabs)] as JSON)
     }
 
     private List prepareTabs(List<SharedTab> tabs) {
@@ -109,6 +125,7 @@ class ApiController {
         def result = new ArrayList<Map>(tabs.size());
         for (SharedTab each: tabs) {
             def map = [
+                    id: each.id,
                     title: each.title ?: "",
                     link: each.link,
                     device: each.device,

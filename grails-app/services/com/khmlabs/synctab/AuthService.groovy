@@ -22,10 +22,12 @@ class AuthService {
         return token.save(true)
     }
 
-    void discard(AuthToken token) {
+    boolean discard(AuthToken token) {
         if (token != null) {
             token.delete()
+            return true
         }
+        return false
     }
 
     AuthToken getAuthToken(String key) {

@@ -1,2 +1,4 @@
 
     . cleanup old auth tokens
+
+    . get title of the tab (use some cache for page details)
