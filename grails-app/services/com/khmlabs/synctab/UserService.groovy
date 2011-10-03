@@ -55,4 +55,8 @@ class UserService {
     private String hashPassword(String password, String salt) {
         return (password + salt).encodeAsSHA1()
     }
+
+    boolean freeEmail(String email) {
+        return User.countByEmail(email) == 0
+    }
 }

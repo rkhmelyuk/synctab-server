@@ -35,9 +35,9 @@ class ApiController {
         def password = params.password?.trim()
 
         def status = false
-        if (email && password) {
+        if (email && password && userService.freeEmail(email)) {
             def user = new User()
-            user.email = params.email?.trim()
+            user.email = email
             status = userService.registerUser(user, password)
         }
 
@@ -90,6 +90,7 @@ class ApiController {
         }
 
         def tab = new SharedTab()
+        tab.user = session.user
         tab.title = params.title?.trim()
         tab.link = params.link?.trim()
         tab.device = params.device?.trim()
@@ -99,7 +100,7 @@ class ApiController {
         render([status: status] as JSON)
     }
 
-    def getSharedTabs = {
+    def getSharedTabsSince = {
         if (request.method != 'GET') {
             response.sendError 405
             return
@@ -112,8 +113,36 @@ class ApiController {
         }
 
         def date = new Date(timestamp)
-        def tabs = sharedTabService.getSharedTabs(date)
+        def user = session.user
+        def tabs = sharedTabService.getSharedTabsSince(user, date)
 
+        render([status: true, tabs: prepareTabs(tabs)] as JSON)
+    }
+
+    def getSharedTabsAfter = {
+        if (request.method != 'GET') {
+            response.sendError 405
+            return
+        }
+
+        String id = params.id
+        if (id == null) {
+            response.sendError 400
+            return
+        }
+
+        final User user = session.user
+        final SharedTab sharedTab = sharedTabService.getSharedTab(id)
+
+        final Date date
+        if (sharedTab != null) {
+            date = sharedTab.date
+        }
+        else {
+            date = new Date() - 2
+        }
+
+        List<SharedTab> tabs = sharedTabService.getSharedTabsSince(user, date)
         render([status: true, tabs: prepareTabs(tabs)] as JSON)
     }
 

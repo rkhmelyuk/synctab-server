@@ -4,6 +4,7 @@ class SharedTab {
 
     String id
 
+    User user
     String title
     String link
     String device
@@ -11,6 +12,7 @@ class SharedTab {
 
     static mapping = {
         link field: 'link'
+        user field: 'userId'
         title filed: 'title'
         device field: 'device'
         date field: 'date', index: true
@@ -19,6 +21,7 @@ class SharedTab {
     }
 
     static constraints = {
+        user nullable: false
         title nullable: true, blank: true
         link nullable: false, blank: false
         device nullable: false, blank: false
