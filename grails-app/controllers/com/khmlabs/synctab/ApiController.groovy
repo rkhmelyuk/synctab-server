@@ -4,6 +4,8 @@ import grails.converters.JSON
 
 class ApiController {
 
+    private static final int RECENT_DAYS_NUM = 2
+
     AuthService authService
     UserService userService
     SharedTabService sharedTabService
@@ -13,6 +15,8 @@ class ApiController {
             except: ['register', 'authorize']]
 
     boolean auth() {
+        println "Executing $actionName"
+
         def token = params.token
         def user = authService.getUserByToken(token)
         if (!user) {
@@ -112,7 +116,14 @@ class ApiController {
             return
         }
 
-        def date = new Date(timestamp)
+        final Date date
+        if (timestamp == 0) {
+            date = new Date() - RECENT_DAYS_NUM
+        }
+        else {
+            date = new Date(timestamp)
+        }
+
         def user = session.user
         def tabs = sharedTabService.getSharedTabsSince(user, date)
 
@@ -139,7 +150,7 @@ class ApiController {
             date = sharedTab.date
         }
         else {
-            date = new Date() - 2
+            date = new Date() - RECENT_DAYS_NUM
         }
 
         List<SharedTab> tabs = sharedTabService.getSharedTabsSince(user, date)
