@@ -1,4 +1,8 @@
 
     . cleanup old auth tokens
 
-    . get title of the tab (use some cache for page details)
+    . cache for link details, memcached
+    . don't add duplicate links, but refresh old one
+    . async link details fetching
+
+    . don't retrieve not needed url info, only description, title and MAYBE favicon

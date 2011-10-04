@@ -15,7 +15,7 @@ class ApiController {
             except: ['register', 'authorize']]
 
     boolean auth() {
-        println "Executing $actionName"
+        log.info "API: $actionName $params"
 
         def token = params.token
         def user = authService.getUserByToken(token)
@@ -166,7 +166,7 @@ class ApiController {
         for (SharedTab each: tabs) {
             def map = [
                     id: each.id,
-                    title: each.title ?: "",
+                    title: each.title,
                     link: each.link,
                     device: each.device,
                     ts: each.date.time
