@@ -1,10 +1,13 @@
 package com.khmlabs.synctab
 
 import com.khmlabs.synctab.helper.UrlInfoRetriever
+import com.khmlabs.synctab.helper.UrlInfo
 
 class SharedTabService {
 
     static transactional = false
+
+    MemcachedService memcachedService
 
     boolean addSharedTab(SharedTab tab) {
         // TODO - don't add duplicate links, just refresh date of existing one
@@ -16,11 +19,16 @@ class SharedTabService {
         if (sharedTab.title) return
 
         try {
-            def retriever = new UrlInfoRetriever(sharedTab.link)
-            retriever.retrieve()
+            final String cacheKey = 'urlInfo_' + Util.hash(sharedTab.link)
+            UrlInfo urlInfo = (UrlInfo) memcachedService.getObject(cacheKey)
+            if (!urlInfo) {
+                def retriever = new UrlInfoRetriever(sharedTab.link)
+                urlInfo = retriever.retrieve()
+                memcachedService.putObject(cacheKey, urlInfo)
+            }
 
-            sharedTab.title = retriever.title
-            sharedTab.link = retriever.realUrl
+            sharedTab.link = urlInfo.link
+            sharedTab.title = urlInfo.title
         }
         catch (Exception e) {
             log.error("Error to retrieve and save details about $sharedTab.link", e)

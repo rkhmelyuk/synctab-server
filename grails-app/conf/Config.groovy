@@ -85,3 +85,8 @@ log4j = {
 
     warn   'org.mortbay.log'
 }
+
+
+synctab {
+    memcachedServers = '127.0.0.1:11211'
+}

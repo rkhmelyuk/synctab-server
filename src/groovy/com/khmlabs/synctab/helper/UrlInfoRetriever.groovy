@@ -16,7 +16,7 @@ class UrlInfoRetriever {
         this.pageUrl = url
     }
 
-    public void retrieve() throws IOException {
+    public UrlInfo retrieve() throws IOException {
         final URL pageURL = new URL(pageUrl)
         final URLConnection siteConnection = pageURL.openConnection()
 
@@ -43,7 +43,14 @@ class UrlInfoRetriever {
         TagNode pageData = cleaner.clean(headContentsStr)
 
         readTitle(pageData)
-        handleMetadata(pageData)
+        retrieveMetadata(pageData)
+
+        final UrlInfo result = new UrlInfo()
+
+        result.link = getRealUrl()
+        result.title = getTitle()
+
+        return result
     }
 
     private void readTitle(TagNode pageData) {
@@ -54,21 +61,21 @@ class UrlInfoRetriever {
         }
     }
 
-    private void handleMetadata(TagNode pageData) {
+    private void retrieveMetadata(TagNode pageData) {
         //open only the meta tags
         final TagNode[] metaData = pageData.getElementsByName("meta", true)
         for (TagNode metaElement: metaData) {
             if (metaElement.hasAttribute("property")) {
-                String name = metaElement.getAttributeByName("property").toLowerCase()
-                if (name.startsWith("og:")) {
+                final String name = metaElement.getAttributeByName("property").toLowerCase()
+                if (supportedOGProperty(name)) {
                     metaAttributes.put(
                             new String(name.substring(3)),
                             metaElement.getAttributeByName("content"))
                 }
             }
             else if (metaElement.hasAttribute("name")) {
-                String name = metaElement.getAttributeByName("name").toLowerCase()
-                if (name.startsWith("og:")) {
+                final String name = metaElement.getAttributeByName("name").toLowerCase()
+                if (supportedOGProperty(name)) {
                     metaAttributes.put(
                             new String(name.substring(3)),
                             metaElement.getAttributeByName("content"))
@@ -78,6 +85,10 @@ class UrlInfoRetriever {
                 }
             }
         }
+    }
+
+    boolean supportedOGProperty(String name) {
+        return (name.equals("og:description") || name.equals("og:title"))
     }
 
     private String handleRelativeHref(URL pageURL, String href) {
