@@ -11,8 +11,8 @@ class SharedTab {
     Date date
 
     static mapping = {
-        link field: 'link'
-        user field: 'userId'
+        link field: 'link', index: true
+        user field: 'userId', index: true
         title filed: 'title'
         device field: 'device'
         date field: 'date', index: true

@@ -9,10 +9,23 @@ class SharedTabService {
 
     MemcachedService memcachedService
 
-    boolean addSharedTab(SharedTab tab) {
-        // TODO - don't add duplicate links, just refresh date of existing one
+    boolean addSharedTab(SharedTab sharedTab) {
+        def tab = sharedTab
         fillLinkDetails(tab)
+
+        // search for such tab, if so, just update the date to now
+        def found = findSuchSharedTab(tab)
+        if (found) {
+            found.date = new Date()
+            found.title = tab.title
+            tab = found
+        }
+
         return saveTab(tab)
+    }
+
+    private SharedTab findSuchSharedTab(SharedTab tab) {
+        SharedTab.findByUserAndLink(tab.user, tab.link)
     }
 
     private void fillLinkDetails(SharedTab sharedTab) {

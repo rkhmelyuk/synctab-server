@@ -1,5 +1,3 @@
 
     . cleanup old auth tokens
-
-    . don't add duplicate links, but refresh old one
     . async link details fetching
