@@ -35,4 +35,10 @@ class SharedTabService {
         //noinspection GroovyAssignabilityCheck
         return SharedTab.get(id)
     }
+
+    void remove(SharedTab tab) {
+        if (tab) {
+            tab.delete(flush: true)
+        }
+    }
 }
