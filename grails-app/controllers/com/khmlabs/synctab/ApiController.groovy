@@ -139,6 +139,37 @@ class ApiController {
         render([status: status] as JSON)
     }
 
+    def reshareTab = {
+        if (request.method != 'POST') {
+            response.sendError 405
+            return
+        }
+
+        String id = params.id
+        if (id == null) {
+            response.sendError 400
+            return
+        }
+
+        boolean status = false
+        SharedTab tab = sharedTabService.getSharedTab(id)
+        if (tab != null) {
+            if (tab.user.id != session.user.id) {
+                response.sendError 404
+                return
+            }
+
+            try {
+                status = sharedTabService.reshare(tab)
+            }
+            catch (Exception e) {
+                status = false
+            }
+        }
+
+        render([status: status] as JSON)
+    }
+
     def getSharedTabsSince = {
         if (request.method != 'GET') {
             response.sendError 405

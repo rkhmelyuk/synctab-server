@@ -9,7 +9,7 @@ class SharedTabService {
     boolean addSharedTab(SharedTab tab) {
         // TODO - don't add duplicate links, just refresh date of existing one
         fillLinkDetails(tab)
-        return (tab.save(flush: true) != null)
+        return saveTab(tab)
     }
 
     private void fillLinkDetails(SharedTab sharedTab) {
@@ -40,5 +40,17 @@ class SharedTabService {
         if (tab) {
             tab.delete(flush: true)
         }
+    }
+
+    boolean reshare(SharedTab tab) {
+        if (tab) {
+            tab.date = new Date()
+            return saveTab(tab)
+        }
+        return false
+    }
+
+    private boolean saveTab(SharedTab tab) {
+        return tab.save(flush: true) != null
     }
 }
