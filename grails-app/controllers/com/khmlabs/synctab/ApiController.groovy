@@ -35,17 +35,30 @@ class ApiController {
             return
         }
 
-        def email = params.email?.trim()
-        def password = params.password?.trim()
+        final String email = params.email?.trim()
+        final String password = params.password?.trim()
 
-        def status = false
-        if (email && password && userService.freeEmail(email)) {
+        String msg = ""
+        boolean status = false
+        if (!email) {
+            msg = g.message(code: 'user.email.blank')
+        }
+        else if (!Util.isEmail(email)) {
+            msg = g.message(code: 'user.email.email.invalid')
+        }
+        else if (!userService.freeEmail(email)) {
+            msg = g.message(code: 'user.email.duplicate')
+        }
+        else if (!password) {
+            msg = g.message(code: 'user.password.blank')
+        }
+        else {
             def user = new User()
             user.email = email
             status = userService.registerUser(user, password)
         }
 
-        render([status: status] as JSON)
+        render([status: status, message: msg] as JSON)
     }
 
     def authorize = {
@@ -235,7 +248,8 @@ class ApiController {
                     title: each.title,
                     link: each.link,
                     device: each.device,
-                    ts: each.date.time
+                    ts: each.date.time,
+                    favicon: each.favicon
             ]
 
             result.add(map)
