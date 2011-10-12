@@ -8,6 +8,7 @@ class SharedTab {
     String title
     String link
     String device
+    String favicon
     Date date
 
     static mapping = {
@@ -15,6 +16,7 @@ class SharedTab {
         user field: 'userId', index: true
         title filed: 'title'
         device field: 'device'
+        favicon filed: 'favicon'
         date field: 'date', index: true
 
         version false
@@ -25,6 +27,7 @@ class SharedTab {
         title nullable: true, blank: true
         link nullable: false, blank: false
         device nullable: false, blank: false
+        favicon nullable: true, blank: true
         date nullable: false
     }
 

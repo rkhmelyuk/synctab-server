@@ -42,6 +42,7 @@ class SharedTabService {
 
             sharedTab.link = urlInfo.link
             sharedTab.title = urlInfo.title
+            sharedTab.favicon = urlInfo.favicon
         }
         catch (Exception e) {
             log.error("Error to retrieve and save details about $sharedTab.link", e)

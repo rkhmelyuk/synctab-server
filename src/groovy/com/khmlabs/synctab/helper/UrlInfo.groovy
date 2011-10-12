@@ -4,5 +4,6 @@ class UrlInfo {
 
     String link
     String title
+    String favicon
 
 }

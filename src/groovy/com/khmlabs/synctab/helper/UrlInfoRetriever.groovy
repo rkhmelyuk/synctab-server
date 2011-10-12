@@ -12,7 +12,7 @@ class UrlInfoRetriever {
 
     private Map<String, String> metaAttributes = new HashMap<String, String>()
 
-    public UrlInfoRetriever(String url)  {
+    public UrlInfoRetriever(String url) {
         this.pageUrl = url
     }
 
@@ -44,13 +44,35 @@ class UrlInfoRetriever {
 
         readTitle(pageData)
         retrieveMetadata(pageData)
+        retrieveFavicon(realURL, pageData)
 
         final UrlInfo result = new UrlInfo()
 
         result.link = getRealUrl()
         result.title = getTitle()
+        result.favicon = getFavicon()
 
         return result
+    }
+
+    private void retrieveFavicon(URL pageURL, TagNode pageData) {
+        final TagNode[] links = pageData.getElementsByName("link", true);
+        for (TagNode link: links) {
+            if (link.hasAttribute("rel")) {
+                final String rel = link.getAttributeByName("rel").toLowerCase();
+
+                if (rel.indexOf("icon") != -1) {
+                    String href = link.getAttributeByName("href");
+                    if (href != null) {
+                        pageFavicon = handleRelativeHref(pageURL, href);
+                    }
+                }
+            }
+        }
+
+        if (pageFavicon == null || pageFavicon.length() == 0) {
+            pageFavicon = handleRelativeHref(pageURL, "/favicon.ico");
+        }
     }
 
     private void readTitle(TagNode pageData) {
