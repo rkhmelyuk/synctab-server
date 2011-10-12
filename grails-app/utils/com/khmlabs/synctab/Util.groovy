@@ -5,6 +5,8 @@ import com.prutsoft.core.utils.ConversionUtils
 
 class Util {
 
+    static final String EMAIL_REGEX = "[a-z0-9!#\$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#\$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?";
+
     @SuppressWarnings("GroovyAssignabilityCheck")
     static String hash(String value) {
         SHA1Codec.encode(value.bytes)
@@ -44,6 +46,10 @@ class Util {
             return ConversionUtils.getLong((String) value, defaultValue)
         }
         return defaultValue
+    }
+
+    static boolean isEmail(String email) {
+        return email ==~ EMAIL_REGEX
     }
 
 }
