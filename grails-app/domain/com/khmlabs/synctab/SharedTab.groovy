@@ -20,6 +20,9 @@ class SharedTab {
         date field: 'date', index: true
 
         version false
+
+        sort 'created'
+        order 'desc'
     }
 
     static constraints = {
@@ -29,6 +32,10 @@ class SharedTab {
         device nullable: false, blank: false
         favicon nullable: true, blank: true
         date nullable: false
+    }
+
+    String toString() {
+        "SharedTab[$id,$link,$date]"
     }
 
 }

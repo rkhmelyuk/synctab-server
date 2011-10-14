@@ -4,6 +4,7 @@ import grails.converters.JSON
 
 class ApiController {
 
+    private static final int LAST_TABS_NUM = 20
     private static final int RECENT_DAYS_NUM = 2
 
     AuthService authService
@@ -16,6 +17,7 @@ class ApiController {
 
     boolean auth() {
         log.info "API: $actionName $params"
+        println "API: $actionName $params"
 
         def token = params.token
         def user = authService.getUserByToken(token)
@@ -183,57 +185,98 @@ class ApiController {
         render([status: status] as JSON)
     }
 
-    def getSharedTabsSince = {
+    def getLastTabs = {
         if (request.method != 'GET') {
             response.sendError 405
             return
         }
 
-        def timestamp = params.long('since')
-        if (timestamp == null) {
-            response.sendError 400
-            return
-        }
-
-        final Date date
-        if (timestamp == 0) {
-            date = new Date() - RECENT_DAYS_NUM
-        }
-        else {
-            date = new Date(timestamp)
-        }
-
         def user = session.user
-        def tabs = sharedTabService.getSharedTabsSince(user, date)
+        def tabs = sharedTabService.getLastSharedTabs(user, LAST_TABS_NUM)
 
         render([status: true, tabs: prepareTabs(tabs)] as JSON)
     }
 
-    def getSharedTabsAfter = {
+    def getTabsAfter = {
         if (request.method != 'GET') {
             response.sendError 405
             return
         }
 
-        String id = params.id
-        if (id == null) {
+        final String id = params.id
+        final Long timestamp = params.long('ts')
+        if (id == null && timestamp == null) {
             response.sendError 400
             return
         }
 
-        final User user = session.user
-        final SharedTab sharedTab = sharedTabService.getSharedTab(id)
+        User user = session.user
+        Date date = getDate(id, timestamp)
+        List<SharedTab> tabs = sharedTabService.getSharedTabsAfter(user, date)
 
-        final Date date
-        if (sharedTab != null) {
-            date = sharedTab.date
+        render([status: true, tabs: prepareTabs(tabs)] as JSON)
+    }
+
+    def getTabsBefore = {
+        if (request.method != 'GET') {
+            response.sendError 405
+            return
         }
-        else {
+
+        final String id = params.id
+        final Long timestamp = params.long('ts')
+        if (id == null && timestamp == null) {
+            response.sendError 400
+            return
+        }
+
+        User user = session.user
+        Date date = getDate(id, timestamp)
+        List<SharedTab> tabs = sharedTabService.getSharedTabsBefore(user, date)
+
+        render([status: true, tabs: prepareTabs(tabs)] as JSON)
+    }
+
+    def getSharedTabs = {
+        if (request.method != 'GET') {
+            response.sendError 405
+            return
+        }
+
+        final String id = params.id
+
+        final Long timestamp = params.long('ts')
+
+        Date date = null
+        if (timestamp != null) {
+            date = new Date(timestamp)
+        }
+        if (date == null) {
             date = new Date() - RECENT_DAYS_NUM
         }
 
-        List<SharedTab> tabs = sharedTabService.getSharedTabsSince(user, date)
+        final User user = session.user
+        List<SharedTab> tabs = sharedTabService.getSharedTabsAfter(user, date)
+
         render([status: true, tabs: prepareTabs(tabs)] as JSON)
+    }
+
+    private Date getDate(String id, long timestamp) {
+        final Date date = null
+        if (id != null) {
+            final SharedTab sharedTab = sharedTabService.getSharedTab(id)
+            if (sharedTab != null) {
+                date = sharedTab.date
+            }
+        }
+        else if (timestamp) {
+            date = new Date(timestamp)
+        }
+
+        if (date == null) {
+            date = new Date() - RECENT_DAYS_NUM
+        }
+        return date
     }
 
     private List prepareTabs(List<SharedTab> tabs) {
