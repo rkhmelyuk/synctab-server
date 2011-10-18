@@ -224,15 +224,24 @@ class ApiController {
         }
 
         final String id = params.id
-        final Long timestamp = params.long('ts')
-        if (id == null && timestamp == null) {
+        if (id == null) {
             response.sendError 400
             return
         }
 
+        int max = params.int("max") ?: 10
+
         User user = session.user
-        Date date = getDate(id, timestamp)
-        List<SharedTab> tabs = sharedTabService.getSharedTabsBefore(user, date)
+        final SharedTab sharedTab = sharedTabService.getSharedTab(id)
+
+        final List<SharedTab> tabs
+        if (sharedTab != null) {
+            Date date = sharedTab.date
+            tabs = sharedTabService.getSharedTabsBefore(user, date, max)
+        }
+        else {
+            tabs = Collections.emptyList()
+        }
 
         render([status: true, tabs: prepareTabs(tabs)] as JSON)
     }
@@ -261,7 +270,7 @@ class ApiController {
         render([status: true, tabs: prepareTabs(tabs)] as JSON)
     }
 
-    private Date getDate(String id, long timestamp) {
+    private Date getDate(String id, Long timestamp) {
         final Date date = null
         if (id != null) {
             final SharedTab sharedTab = sharedTabService.getSharedTab(id)

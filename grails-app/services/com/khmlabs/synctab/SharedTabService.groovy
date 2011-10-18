@@ -53,12 +53,13 @@ class SharedTabService {
         SharedTab.findAllByUserAndDateGreaterThan(user, since)
     }
 
-    List<SharedTab> getSharedTabsBefore(User user, Date since) {
-        SharedTab.findAllByUserAndDateLessThan(user, since)
+    List<SharedTab> getSharedTabsBefore(User user, Date since, int max) {
+        SharedTab.findAllByUserAndDateLessThan(user, since, [max: max])
     }
 
     List<SharedTab> getLastSharedTabs(User user, int max) {
         // FIXME - Next line is not working
+        // TODO - need to get count, and the offset,
         // SharedTab.findAllByUser(user, [max: max, sort: 'created', order: 'desc'])
 
         def users = SharedTab.findAllByUser(user)
