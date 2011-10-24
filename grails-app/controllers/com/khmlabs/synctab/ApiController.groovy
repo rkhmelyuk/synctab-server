@@ -252,8 +252,6 @@ class ApiController {
             return
         }
 
-        final String id = params.id
-
         final Long timestamp = params.long('ts')
 
         Date date = null

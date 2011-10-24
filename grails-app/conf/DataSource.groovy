@@ -2,7 +2,7 @@ environments {
     development {
         grails {
             mongo {
-                host = "localhost"
+                host = "127.0.0.1"
                 port = 27017
                 databaseName = "synctab"
             }
@@ -10,7 +10,7 @@ environments {
     }
     test {
         mongo {
-            host = "localhost"
+            host = "127.0.0.1"
             port = 27017
             databaseName = "synctab_test"
         }
