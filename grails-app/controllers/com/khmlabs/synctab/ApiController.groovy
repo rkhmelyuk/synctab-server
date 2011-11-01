@@ -15,6 +15,16 @@ class ApiController {
             action: this.&auth,
             except: ['register', 'authorize']]
 
+    /**
+     * The interceptor for API, that requires an authToken.
+     * This interceptor finds a user by authToken and share it via
+     * <code>session.user</code> variable.
+     * <br/>
+     * If authToken is invalid or absent, this interceptor returns 401 code.
+     * In this case clients must invalidate their current session, logout and show a login screen.
+     *
+     * @return whether to continue request processing.
+     */
     boolean auth() {
         log.info "API: $actionName $params"
         println "API: $actionName $params"
@@ -31,6 +41,14 @@ class ApiController {
         return true
     }
 
+    /**
+     * Register new user with specified email and password.
+     * Both email and password are required, email should be unique and must have a correct format.
+     *
+     * Action returns a json object with two values:
+     *  - status: "true" if registered, otherwise "false".
+     *  - message: the error message, should be used when status is "false", to show an error message to the user.
+     */
     def register = {
         if (request.method != 'POST') {
             response.sendError 405
@@ -63,6 +81,17 @@ class ApiController {
         render([status: status, message: msg] as JSON)
     }
 
+    /**
+     * Authorize user email and password. Clients call this method on login.
+     * When user email and password are valid, a new authToken is created for user
+     * and returned to the client as token.
+     *
+     * @see com.khmlabs.synctab.AuthToken
+     *
+     * Returns:
+     *  - status: "true" is authorized, otherwise "false"
+     *  - token if status is "true".
+     */
     def authorize = {
         if (request.method != 'POST') {
             response.sendError 405
@@ -86,6 +115,14 @@ class ApiController {
         render([status: status, token: tokenKey] as JSON)
     }
 
+    /**
+     * Discards authToken, that was used by client.
+     * This operation should be called by client application, when user choose to logout
+     * or client session was invalidated.
+     *
+     * Returns:
+     *  - status: "true" if logout successfully, otherwise "false".
+     */
     def logout = {
         if (request.method != 'POST') {
             response.sendError 405
@@ -102,6 +139,12 @@ class ApiController {
         render([status: status] as JSON)
     }
 
+    /**
+     * Share a tab.
+     *
+     * Returns:
+     *  - status: "true" if was shared, otherwise "false".
+     */
     def shareTab = {
         if (request.method != 'POST') {
             response.sendError 405

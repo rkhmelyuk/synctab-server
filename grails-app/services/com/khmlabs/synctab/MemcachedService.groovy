@@ -42,6 +42,7 @@ class MemcachedService implements InitializingBean {
                     return gson.fromJson(map.object.toString(), collectionType)
                 }
 
+                // first get the value type class, and then parse json for
                 def valueType = Class.forName(map.'class'.toString(), true, this.class.classLoader)
                 return gson.fromJson(map.object.toString(), valueType)
             }
@@ -56,6 +57,8 @@ class MemcachedService implements InitializingBean {
     void putObject(String key, Object value, int expiration = EXPIRATION, Type collectionType = null) {
         try {
             if (value != null) {
+                // store object as json object
+
                 def objectValue = collectionType ? gson.toJson(value, collectionType) : gson.toJson(value)
                 def cacheMap = ['class': value.getClass().name, 'object': objectValue]
 

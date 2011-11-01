@@ -1,5 +1,12 @@
 package com.khmlabs.synctab
 
+/**
+ * AuthToken used to identify a user client application.
+ * It is created in authenticate action and removed on logout action.
+ * AuthToken expires in 2 weeks, so client will require a user to authorize every 2 weeks.
+ *
+ * The same user can have many authTokens.
+ */
 class AuthToken {
 
     String id
