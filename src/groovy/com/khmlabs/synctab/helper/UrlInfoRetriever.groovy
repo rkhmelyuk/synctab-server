@@ -130,6 +130,9 @@ class UrlInfoRetriever {
 
                 href = path + href
             }
+            else {
+                href = "http:" + href;
+            }
         }
 
         return href
