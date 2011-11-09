@@ -1,6 +1,6 @@
 package com.khmlabs.synctab
 
-import com.khmlabs.synctab.helper.UrlInfoRetriever
+import com.khmlabs.synctab.helper.PageInfoRetriever
 import com.khmlabs.synctab.helper.UrlInfo
 
 class SharedTabService {
@@ -47,7 +47,7 @@ class SharedTabService {
             UrlInfo urlInfo = (UrlInfo) memcachedService.getObject(cacheKey)
             if (!urlInfo) {
                 // if not found in cache, then retrieve information from web
-                def retriever = new UrlInfoRetriever(sharedTab.link)
+                def retriever = new PageInfoRetriever(sharedTab.link)
                 urlInfo = retriever.retrieve()
 
                 // and save into the cache

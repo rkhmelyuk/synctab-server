@@ -2,8 +2,17 @@ package com.khmlabs.synctab.helper
 
 import org.htmlcleaner.HtmlCleaner
 import org.htmlcleaner.TagNode
+import com.khmlabs.synctab.Util
 
-class UrlInfoRetriever {
+/**
+ * Retrieves page information by url.
+ * Next information is retrieved:
+ *  - real page url (post-redirects url)
+ *  - page title
+ *  - page description
+ *  - page favicon url
+ */
+class PageInfoRetriever {
 
     private String pageUrl
     private String pageTitle
@@ -12,35 +21,25 @@ class UrlInfoRetriever {
 
     private Map<String, String> metaAttributes = new HashMap<String, String>()
 
-    public UrlInfoRetriever(String url) {
+    public PageInfoRetriever(String url) {
         this.pageUrl = url
     }
 
+    /**
+     * Retrieve page information.
+     * @return the page information.
+     * @throws IOException error to read a page.
+     */
     public UrlInfo retrieve() throws IOException {
         final URL pageURL = new URL(pageUrl)
         final URLConnection siteConnection = pageURL.openConnection()
+        final String headContent = readHeadContent(siteConnection)
+        final URL realURL = siteConnection.getURL()
 
-        final StringBuffer headContents = new StringBuffer()
-        BufferedReader dis = new BufferedReader(new InputStreamReader(siteConnection.getInputStream()));
-
-        String inputLine;
-        while ((inputLine = dis.readLine()) != null) {
-            if (inputLine.contains("</head>")) {
-                inputLine = inputLine.substring(0, inputLine.indexOf("</head>") + 7);
-                inputLine = inputLine.concat("<body></body></html>");
-                headContents.append(inputLine + "\r\n");
-                break;
-            }
-            headContents.append(inputLine + "\r\n");
-        }
-
-        URL realURL = siteConnection.getURL()
         pageUrl = realURL.toExternalForm()
 
-        String headContentsStr = headContents.toString()
-        HtmlCleaner cleaner = new HtmlCleaner()
-
-        TagNode pageData = cleaner.clean(headContentsStr)
+        final HtmlCleaner cleaner = new HtmlCleaner()
+        final TagNode pageData = cleaner.clean(headContent)
 
         readTitle(pageData)
         retrieveMetadata(pageData)
@@ -55,6 +54,22 @@ class UrlInfoRetriever {
         return result
     }
 
+    private String readHeadContent(URLConnection siteConnection) {
+        BufferedReader dis = new BufferedReader(new InputStreamReader(siteConnection.getInputStream()));
+        final StringBuffer headContents = new StringBuffer()
+        String inputLine;
+        while ((inputLine = dis.readLine()) != null) {
+            if (inputLine.contains("</head>")) {
+                inputLine = inputLine.substring(0, inputLine.indexOf("</head>") + 7);
+                inputLine = inputLine.concat("<body></body></html>");
+                headContents.append(inputLine + "\r\n");
+                break;
+            }
+            headContents.append(inputLine + "\r\n");
+        }
+        return headContents.toString()
+    }
+
     private void retrieveFavicon(URL pageURL, TagNode pageData) {
         final TagNode[] links = pageData.getElementsByName("link", true);
         for (TagNode link: links) {
@@ -64,14 +79,14 @@ class UrlInfoRetriever {
                 if (rel.indexOf("icon") != -1) {
                     String href = link.getAttributeByName("href");
                     if (href != null) {
-                        pageFavicon = handleRelativeHref(pageURL, href);
+                        pageFavicon = Util.handleRelativeLink(pageURL, href);
                     }
                 }
             }
         }
 
         if (pageFavicon == null || pageFavicon.length() == 0) {
-            pageFavicon = handleRelativeHref(pageURL, "/favicon.ico");
+            pageFavicon = Util.handleRelativeLink(pageURL, "/favicon.ico");
         }
     }
 
@@ -111,31 +126,6 @@ class UrlInfoRetriever {
 
     boolean supportedOGProperty(String name) {
         return (name.equals("og:description") || name.equals("og:title"))
-    }
-
-    private String handleRelativeHref(URL pageURL, String href) {
-        href = href.trim()
-        if (!href.startsWith("http://") && !href.startsWith("https://")) {
-            if (!href.startsWith("/")) {
-                href = "/" + href
-            }
-            if (!href.startsWith("//")) {
-                // relative
-                String path = pageURL.getProtocol() + "://" + pageURL.getHost()
-
-                int port = pageURL.getPort()
-                if (port > 0 && port != 80 && port != 443) {
-                    path += ":" + Integer.toString(port)
-                }
-
-                href = path + href
-            }
-            else {
-                href = "http:" + href;
-            }
-        }
-
-        return href
     }
 
     public String getContent(String property) {

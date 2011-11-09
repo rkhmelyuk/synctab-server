@@ -162,6 +162,12 @@ class ApiController {
         render([status: status] as JSON)
     }
 
+    /**
+     * Remove the tab by id. User can remove only own tabs.
+     *
+     * Returns:
+     *  - status: "true" if was removed, otherwise "false".
+     */
     def removeTab = {
         if (request.method != 'POST') {
             response.sendError 405

@@ -1,7 +1,7 @@
 package com.khmlabs.synctab
 
-import org.codehaus.groovy.grails.plugins.codecs.SHA1Codec
 import com.prutsoft.core.utils.ConversionUtils
+import org.codehaus.groovy.grails.plugins.codecs.SHA1Codec
 
 class Util {
 
@@ -50,6 +50,31 @@ class Util {
 
     static boolean isEmail(String email) {
         return email ==~ EMAIL_REGEX
+    }
+
+    static String handleRelativeLink(URL pageURL, String link) {
+        link = link.trim()
+        if (!link.startsWith("http://") && !link.startsWith("https://")) {
+            if (!link.startsWith("/")) {
+                link = "/" + link
+            }
+            if (!link.startsWith("//")) {
+                // relative
+                String path = pageURL.getProtocol() + "://" + pageURL.getHost()
+
+                int port = pageURL.getPort()
+                if (port > 0 && port != 80 && port != 443) {
+                    path += ":" + Integer.toString(port)
+                }
+
+                link = path + link
+            }
+            else {
+                link = "http:" + link
+            }
+        }
+
+        return link
     }
 
 }
