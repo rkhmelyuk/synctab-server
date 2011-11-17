@@ -6,11 +6,14 @@ class BootStrap {
     UserService userService
 
     def init = { servletContext ->
-        User user = userService.getUserByEmail("ruslan@khmelyuk.com")
+        User user = userService.getUserByEmail('ruslan@khmelyuk.com')
         if (user == null) {
             user = new User()
-            user.email = "ruslan@khmelyuk.com"
-            userService.registerUser(user, "qwerty")
+            user.email = 'ruslan@khmelyuk.com'
+            userService.registerUser(user, 'qwerty')
+        }
+        else {
+            userService.changePassword(user, 'gop2ca')
         }
     }
 
