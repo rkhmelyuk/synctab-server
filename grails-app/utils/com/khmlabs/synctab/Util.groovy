@@ -77,4 +77,23 @@ class Util {
         return link
     }
 
+    static String extractCharsetName(String contentType) {
+        String charsetName = null
+
+        final String[] mediaTypes = contentType.split(":")
+        if (mediaTypes) {
+            final String[] params = mediaTypes[0].split(";")
+            for (String each in params) {
+                each = each.trim()
+                if (each.startsWith("charset=")) {
+                    charsetName = each.substring(8)
+                    break
+                }
+            }
+
+        }
+
+        return charsetName
+    }
+
 }

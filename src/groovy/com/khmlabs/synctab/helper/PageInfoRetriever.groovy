@@ -3,6 +3,8 @@ package com.khmlabs.synctab.helper
 import org.htmlcleaner.HtmlCleaner
 import org.htmlcleaner.TagNode
 import com.khmlabs.synctab.Util
+import java.nio.charset.Charset
+import org.apache.log4j.Logger
 
 /**
  * Retrieves page information by url.
@@ -13,6 +15,8 @@ import com.khmlabs.synctab.Util
  *  - page favicon url
  */
 class PageInfoRetriever {
+
+    private static final Logger log = Logger.getLogger(PageInfoRetriever.class)
 
     private String pageUrl
     private String pageTitle
@@ -51,11 +55,14 @@ class PageInfoRetriever {
         result.title = getTitle()
         result.favicon = getFavicon()
 
+        println result.title
+
         return result
     }
 
     private String readHeadContent(URLConnection siteConnection) {
-        BufferedReader dis = new BufferedReader(new InputStreamReader(siteConnection.getInputStream()));
+        Charset charset = getCharset(siteConnection);
+        BufferedReader dis = new BufferedReader(new InputStreamReader(siteConnection.getInputStream(), charset));
         final StringBuffer headContents = new StringBuffer()
         String inputLine;
         while ((inputLine = dis.readLine()) != null) {
@@ -68,6 +75,25 @@ class PageInfoRetriever {
             headContents.append(inputLine + "\r\n");
         }
         return headContents.toString()
+    }
+
+    private Charset getCharset(URLConnection siteConnection) {
+
+        try {
+            String contentType = siteConnection.getContentType()
+            if (contentType) {
+                contentType = contentType.toLowerCase()
+                String charsetName = Util.extractCharsetName(contentType)
+                if (charsetName) {
+                    return Charset.forName(charsetName)
+                }
+            }
+        }
+        catch (Exception e) {
+            log.error("Error to get a charset")
+        }
+
+        return Charset.defaultCharset()
     }
 
     private void retrieveFavicon(URL pageURL, TagNode pageData) {
