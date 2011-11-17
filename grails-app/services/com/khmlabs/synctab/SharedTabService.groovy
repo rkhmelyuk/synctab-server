@@ -44,7 +44,7 @@ class SharedTabService {
             // Build a cache key, that starts with a prefix as a way to have namespace of values.
             // Hash of link is used, as cache key is limited to 256 chars but links can be way longer.
             final String cacheKey = 'urlInfo_' + Util.hash(sharedTab.link)
-            UrlInfo urlInfo = null; // TODO - uncomment me (UrlInfo) memcachedService.getObject(cacheKey)
+            UrlInfo urlInfo = (UrlInfo) memcachedService.getObject(cacheKey)
             if (!urlInfo) {
                 // if not found in cache, then retrieve information from web
                 def retriever = new PageInfoRetriever(sharedTab.link)

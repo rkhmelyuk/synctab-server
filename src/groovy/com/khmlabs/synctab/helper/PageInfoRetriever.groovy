@@ -31,6 +31,7 @@ class PageInfoRetriever {
 
     /**
      * Retrieve page information.
+     *
      * @return the page information.
      * @throws IOException error to read a page.
      */
@@ -62,7 +63,10 @@ class PageInfoRetriever {
 
     private String readHeadContent(URLConnection siteConnection) {
         Charset charset = getCharset(siteConnection);
-        BufferedReader dis = new BufferedReader(new InputStreamReader(siteConnection.getInputStream(), charset));
+        BufferedReader dis = new BufferedReader(
+                new InputStreamReader(
+                        siteConnection.getInputStream(), charset));
+
         final StringBuffer headContents = new StringBuffer()
         String inputLine;
         while ((inputLine = dis.readLine()) != null) {
@@ -105,14 +109,14 @@ class PageInfoRetriever {
                 if (rel.indexOf("icon") != -1) {
                     String href = link.getAttributeByName("href");
                     if (href != null) {
-                        pageFavicon = Util.handleRelativeLink(pageURL, href);
+                        pageFavicon = Util.relativeLinkToAbsolute(pageURL, href);
                     }
                 }
             }
         }
 
         if (pageFavicon == null || pageFavicon.length() == 0) {
-            pageFavicon = Util.handleRelativeLink(pageURL, "/favicon.ico");
+            pageFavicon = Util.relativeLinkToAbsolute(pageURL, "/favicon.ico");
         }
     }
 

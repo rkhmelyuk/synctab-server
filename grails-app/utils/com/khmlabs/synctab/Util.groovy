@@ -48,20 +48,35 @@ class Util {
         return defaultValue
     }
 
+    /**
+     * Check if the input string is an email.
+     *
+     * @param email the input string, that claims to be an email.
+     * @return true if input string is email, otherwise false.
+     */
     static boolean isEmail(String email) {
         return email ==~ EMAIL_REGEX
     }
 
-    static String handleRelativeLink(URL pageURL, String link) {
+    /**
+     * Check if link is relative and if it's so, converts it to absolute.
+     *
+     * @param pageURL the page url.
+     * @param link the link to check and convert to absolute.
+     * @return the absolute link.
+     */
+    static String relativeLinkToAbsolute(URL pageURL, String link) {
         link = link.trim()
         if (!link.startsWith("http://") && !link.startsWith("https://")) {
+            // the relative is relative
+
             if (!link.startsWith("/")) {
                 link = "/" + link
             }
             if (!link.startsWith("//")) {
-                // relative
                 String path = pageURL.getProtocol() + "://" + pageURL.getHost()
 
+                // append port
                 int port = pageURL.getPort()
                 if (port > 0 && port != 80 && port != 443) {
                     path += ":" + Integer.toString(port)
@@ -70,6 +85,7 @@ class Util {
                 link = path + link
             }
             else {
+                // to handle links like //www.google.com/favicon.png
                 link = "http:" + link
             }
         }
@@ -77,20 +93,28 @@ class Util {
         return link
     }
 
+    /**
+     * Extract the charset name form the content type string.
+     * Content type string is received from Content-Type header.
+     *
+     * @param contentType the content type string.
+     * @return the found charset name or null if not found.
+     */
     static String extractCharsetName(String contentType) {
-        String charsetName = null
 
-        final String[] mediaTypes = contentType.split(":")
-        if (mediaTypes) {
-            final String[] params = mediaTypes[0].split(";")
-            for (String each in params) {
-                each = each.trim()
-                if (each.startsWith("charset=")) {
-                    charsetName = each.substring(8)
-                    break
+        String charsetName = null
+        if (contentType) {
+            final String[] mediaTypes = contentType.split(":")
+            if (mediaTypes) {
+                final String[] params = mediaTypes[0].split(";")
+                for (String each in params) {
+                    each = each.trim()
+                    if (each.startsWith("charset=")) {
+                        charsetName = each.substring(8)
+                        break
+                    }
                 }
             }
-
         }
 
         return charsetName
