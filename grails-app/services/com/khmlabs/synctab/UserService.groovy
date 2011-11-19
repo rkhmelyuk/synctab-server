@@ -4,13 +4,18 @@ class UserService {
 
     static transactional = false
 
+    TagService tagService
+
     boolean registerUser(User user, String password) {
         if (user && password) {
             user.created = System.currentTimeMillis()
             user.active = true
             user.password = hashPassword(password, user.email)
 
-            return user.save() != null
+            if (user.save() != null) {
+                tagService.addDefaultTags(user)
+                return true
+            }
         }
         return false
 
@@ -50,6 +55,10 @@ class UserService {
         }
 
         return null
+    }
+
+    List<User> getUsers() {
+        User.findAll()
     }
 
     private String hashPassword(String password, String salt) {
