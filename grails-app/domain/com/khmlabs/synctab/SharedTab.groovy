@@ -1,5 +1,10 @@
 package com.khmlabs.synctab
 
+/**
+ * A shared tab or link.
+ *
+ * @author Ruslan Khmelyuk
+ */
 class SharedTab {
 
     String id
@@ -21,7 +26,7 @@ class SharedTab {
 
         version false
 
-        sort 'created'
+        sort 'date'
         order 'desc'
     }
 

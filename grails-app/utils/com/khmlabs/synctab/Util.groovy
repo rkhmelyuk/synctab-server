@@ -97,22 +97,20 @@ class Util {
      * Extract the charset name form the content type string.
      * Content type string is received from Content-Type header.
      *
-     * @param contentType the content type string.
+     * @param contentType the content type string; must be no null, no checking
      * @return the found charset name or null if not found.
      */
     static String extractCharsetName(String contentType) {
 
         String charsetName = null
-        if (contentType) {
-            final String[] mediaTypes = contentType.split(":")
-            if (mediaTypes) {
-                final String[] params = mediaTypes[0].split(";")
-                for (String each in params) {
-                    each = each.trim()
-                    if (each.startsWith("charset=")) {
-                        charsetName = each.substring(8)
-                        break
-                    }
+        final String[] mediaTypes = contentType.split(":")
+        if (mediaTypes) {
+            final String[] params = mediaTypes[0].split(";")
+            for (String each in params) {
+                each = each.trim()
+                if (each.startsWith("charset=")) {
+                    charsetName = each.substring(8)
+                    break
                 }
             }
         }
