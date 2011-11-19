@@ -7,6 +7,7 @@ class ApiController {
     private static final int LAST_TABS_NUM = 20
     private static final int RECENT_DAYS_NUM = 2
 
+    TagService tagService
     AuthService authService
     UserService userService
     SharedTabService sharedTabService
@@ -138,6 +139,10 @@ class ApiController {
         }
         render([status: status] as JSON)
     }
+
+    // --------------------------------------------------------------
+    // Tabs
+    // --------------------------------------------------------------
 
     /**
      * Share a tab.
@@ -335,7 +340,7 @@ class ApiController {
         return date
     }
 
-    private List prepareTabs(List<SharedTab> tabs) {
+    private List<Map> prepareTabs(List<SharedTab> tabs) {
         if (!tabs) {
             return Collections.emptyList()
         }
@@ -349,6 +354,61 @@ class ApiController {
                     device: each.device,
                     ts: each.date.time,
                     favicon: each.favicon
+            ]
+
+            result.add(map)
+        }
+
+        return result
+    }
+
+    // -----------------------------------------------------------------------
+    // Tags
+    // -----------------------------------------------------------------------
+
+    /**
+     * Gets the list of user tags.
+     */
+    def getTags = {
+        if (request.method != 'GET') {
+            response.sendError 405
+            return
+        }
+
+        final User user = session.user
+        List<Tag> tags = tagService.getTags(user)
+
+        render([status: true, tabs: prepareTags(tags)] as JSON)
+    }
+
+    /**
+     * Add new user tag.
+     */
+    def addTag = {
+        if (request.method != 'POST') {
+            response.sendError 405
+            return
+        }
+
+        Tag tag = new Tag()
+        tag.user = session.user
+        tag.name = params.name?.trim()
+
+        boolean status = tagService.addTag(tag)
+        render([status: status] as JSON)
+    }
+
+    private List<Map> prepareTags(List<Tag> tags) {
+        if (!tags) {
+            return Collections.emptyList()
+        }
+
+        def result = new ArrayList<Map>(tags.size());
+        for (Tag each: tags) {
+            def map = [
+                    id: each.id,
+                    name: each.name,
+                    ts: each.created.time
             ]
 
             result.add(map)
