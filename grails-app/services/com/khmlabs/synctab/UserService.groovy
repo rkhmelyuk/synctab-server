@@ -57,6 +57,12 @@ class UserService {
         return null
     }
 
+    /**
+     * Gets the list of all users.
+     * NOTE: should be used very carefully.
+     *
+     * @return the list of all users.
+     */
     List<User> getUsers() {
         User.findAll()
     }

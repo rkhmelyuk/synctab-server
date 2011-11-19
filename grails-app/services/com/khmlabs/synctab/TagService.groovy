@@ -1,5 +1,7 @@
 package com.khmlabs.synctab
 
+import com.khmlabs.synctab.tag.DefaultTags
+
 /**
  * The service to work with Tags.
  *
@@ -54,10 +56,10 @@ class TagService {
      * @param user the user to add tags for.
      */
     void addDefaultTags(User user) {
-        addTag(new Tag(user: user, name: 'Chrome'))
-        addTag(new Tag(user: user, name: 'Android'))
-        addTag(new Tag(user: user, name: 'Home'))
-        addTag(new Tag(user: user, name: 'Work'))
+        addTag(new Tag(user: user, name: DefaultTags.CHROME))
+        addTag(new Tag(user: user, name: DefaultTags.ANDROID))
+        addTag(new Tag(user: user, name: DefaultTags.HOME))
+        addTag(new Tag(user: user, name: DefaultTags.WORK))
     }
 
     private boolean saveTag(Tag tag) {

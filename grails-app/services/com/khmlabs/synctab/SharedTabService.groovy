@@ -141,7 +141,20 @@ class SharedTabService {
         return false
     }
 
-    private boolean saveTab(SharedTab tab) {
+    boolean saveTab(SharedTab tab) {
+        if (!tab.id) {
+            return false
+        }
+
         return tab.save(flush: true) != null
+    }
+
+    /**
+     * Gets the list of all shared tabs for specified user.
+     * @param user the user to get shared tabs for.
+     * @return the list of user shared tabs.
+     */
+    List<SharedTab> getSharedTabs(User user) {
+        SharedTab.findAllByUser(user)
     }
 }
