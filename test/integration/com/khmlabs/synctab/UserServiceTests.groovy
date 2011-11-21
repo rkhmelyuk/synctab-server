@@ -11,6 +11,8 @@ class UserServiceTests extends GroovyTestCase {
     UserService userService
 
     void tearDown() {
+        super.tearDown()
+
         removeUsers()
     }
 

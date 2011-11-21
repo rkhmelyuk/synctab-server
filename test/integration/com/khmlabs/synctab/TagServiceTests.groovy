@@ -13,6 +13,8 @@ class TagServiceTests extends GroovyTestCase {
     User user
 
     void setUp() {
+        super.setUp()
+
         user = userService.getUserByEmail('ruslan@khmelyuk.com')
     }
 

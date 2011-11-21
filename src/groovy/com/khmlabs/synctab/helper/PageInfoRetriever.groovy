@@ -1,10 +1,10 @@
 package com.khmlabs.synctab.helper
 
-import org.htmlcleaner.HtmlCleaner
-import org.htmlcleaner.TagNode
 import com.khmlabs.synctab.Util
 import java.nio.charset.Charset
 import org.apache.log4j.Logger
+import org.htmlcleaner.HtmlCleaner
+import org.htmlcleaner.TagNode
 
 /**
  * Retrieves page information by url.
@@ -55,8 +55,6 @@ class PageInfoRetriever {
         result.link = getRealUrl()
         result.title = getTitle()
         result.favicon = getFavicon()
-
-        println result.title
 
         return result
     }

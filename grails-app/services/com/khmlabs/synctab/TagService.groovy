@@ -42,14 +42,6 @@ class TagService {
     }
 
     /**
-     * Remove all tags for specified user.
-     * @param user the user to remove tags for.
-     */
-    void removeUserTags(User user) {
-        Tag.executeUpdate("delete Tag where user = ?", [user])
-    }
-
-    /**
      * Gets the list of user tags.
      * @param user the user to get tags for.
      * @return the list of user tags.

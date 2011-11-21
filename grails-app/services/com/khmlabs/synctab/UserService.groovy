@@ -38,16 +38,6 @@ class UserService {
         return false
     }
 
-    /**
-     * Remove the user with all related data.
-     * @param user the user to remove.
-     */
-    void removeUser(User user) {
-        tagService.removeUserTags(user)
-        authService.removeUserAuth(user)
-        sharedTabService.removeUserTabs(user)
-    }
-
     User getUser(String id) {
         //noinspection GroovyAssignabilityCheck
         User.get(id)
