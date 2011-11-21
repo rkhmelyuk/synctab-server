@@ -76,7 +76,19 @@ class TagService {
         addTag(new Tag(user: user, name: DefaultTags.WORK))
     }
 
+    /**
+     * Find the tag by it's id that belongs to specified user.
+     *
+     * @param user the tag user.
+     * @param id the tag id.
+     * @return the found tag by user and id.
+     */
+    Tag getUserTagById(User user, String id) {
+        Tag.findByIdAndUser(id, user)
+    }
+
     private boolean saveTag(Tag tag) {
         return tag.save(flush: true) != null
     }
+
 }

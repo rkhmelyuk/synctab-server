@@ -1,12 +1,12 @@
 package com.khmlabs.synctab
 
+import com.google.common.collect.Lists
 import com.khmlabs.synctab.helper.PageInfoRetriever
 import com.khmlabs.synctab.helper.UrlInfo
 import com.khmlabs.synctab.tab.condition.AfterTabConditions
 import com.khmlabs.synctab.tab.condition.BeforeTabConditions
 import com.khmlabs.synctab.tab.condition.RecentTabConditions
 import com.khmlabs.synctab.tab.condition.TabConditions
-import com.google.common.collect.Lists
 
 /**
  * Manage work with SharedTabs.

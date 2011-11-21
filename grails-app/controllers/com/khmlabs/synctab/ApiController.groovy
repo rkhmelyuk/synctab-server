@@ -61,7 +61,7 @@ class ApiController {
         final String email = params.email?.trim()
         final String password = params.password?.trim()
 
-        String msg = ""
+        String msg = ''
         boolean status = false
         if (!email) {
             msg = g.message(code: 'user.email.blank')
@@ -162,8 +162,8 @@ class ApiController {
         tab.user = session.user
         tab.title = params.title?.trim()
         tab.link = params.link?.trim()
-        tab.device = params.device?.trim()
         tab.date = new Date()
+        tab.tag = getTagFromRequest()
 
         def status = sharedTabService.addSharedTab(tab) != null
         render([status: status] as JSON)
@@ -241,6 +241,14 @@ class ApiController {
         render([status: status] as JSON)
     }
 
+    /**
+     * Returns the list of last available tabs.
+     * Client can pass a "tabId" parameter with an id of the tab to get tags for.
+     *
+     * Returns:
+     *  - status: "true" if was removed, otherwise "false".
+     *  - tabs: an array of found tabs.
+     */
     def getLastTabs = {
         if (request.method != 'GET') {
             response.sendError 405
@@ -248,12 +256,21 @@ class ApiController {
         }
 
         User user = session.user
-        RecentTabConditions conditions = new RecentTabConditions(user, null, LAST_TABS_NUM)
+        Tag tag = getTagFromRequest()
+        RecentTabConditions conditions = new RecentTabConditions(user, tag, LAST_TABS_NUM)
         List<SharedTab> tabs = sharedTabService.getRecentSharedTabs(conditions)
 
         render([status: true, tabs: prepareTabs(tabs)] as JSON)
     }
 
+    /**
+     * Returns the list of tabs after specified date or after specified tab.
+     * Client can pass a "tabId" parameter with an id of the tab to get tags for.
+     *
+     * Returns:
+     *  - status: "true" if was removed, otherwise "false".
+     *  - tabs: an array of found tabs.
+     */
     def getTabsAfter = {
         if (request.method != 'GET') {
             response.sendError 405
@@ -268,13 +285,24 @@ class ApiController {
         }
 
         User user = session.user
+        Tag tag = getTagFromRequest()
         Date date = getDate(id, timestamp)
-        AfterTabConditions conditions = new AfterTabConditions(user, null, date)
+        AfterTabConditions conditions = new AfterTabConditions(user, tag, date)
         List<SharedTab> tabs = sharedTabService.getSharedTabsAfter(conditions)
 
         render([status: true, tabs: prepareTabs(tabs)] as JSON)
     }
 
+    /**
+     * Returns the list of tabs before specified tab.
+     * Client can pass a "tabId" parameter with an id of the tab to get tags for.
+     *
+     * Used to get the next page of shared tabs.
+     *
+     * Returns:
+     *  - status: "true" if was removed, otherwise "false".
+     *  - tabs: an array of found tabs.
+     */
     def getTabsBefore = {
         if (request.method != 'GET') {
             response.sendError 405
@@ -287,7 +315,7 @@ class ApiController {
             return
         }
 
-        int max = params.int("max") ?: 10
+        int max = params.int('max') ?: 10
 
         User user = session.user
         final SharedTab sharedTab = sharedTabService.getSharedTab(id)
@@ -295,7 +323,8 @@ class ApiController {
         final List<SharedTab> tabs
         if (sharedTab != null) {
             Date date = sharedTab.date
-            BeforeTabConditions conditions = new BeforeTabConditions(user, null, date, max)
+            Tag tag = getTagFromRequest()
+            BeforeTabConditions conditions = new BeforeTabConditions(user, tag, date, max)
             tabs = sharedTabService.getSharedTabsBefore(conditions)
         }
         else {
@@ -322,7 +351,8 @@ class ApiController {
         }
 
         User user = session.user
-        AfterTabConditions conditions = new AfterTabConditions(user, null, date)
+        Tag tag = getTagFromRequest()
+        AfterTabConditions conditions = new AfterTabConditions(user, tag, date)
         List<SharedTab> tabs = sharedTabService.getSharedTabsAfter(conditions)
 
         render([status: true, tabs: prepareTabs(tabs)] as JSON)
@@ -357,7 +387,7 @@ class ApiController {
                     id: each.id,
                     title: each.title,
                     link: each.link,
-                    device: each.device,
+                    tag: each.tag?.name,
                     ts: each.date.time,
                     favicon: each.favicon
             ]
@@ -367,6 +397,23 @@ class ApiController {
 
         return result
     }
+
+    /**
+     * Gets the user tag from request.
+     *
+     * @return the found tag or null if not found.
+     */
+    private Tag getTagFromRequest() {
+        final String tagId = params.tagId
+
+        if (tagId) {
+            final User user = session.user
+            return tagService.getUserTagById(user, tagId)
+        }
+
+        return null
+    }
+
 
     // -----------------------------------------------------------------------
     // Tags
