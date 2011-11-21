@@ -47,7 +47,11 @@ class TagService {
      * @return the list of user tags.
      */
     List<Tag> getTags(User user) {
-        return Tag.findAllByUser(user)
+        if (user) {
+            return Tag.findAllByUser(user)
+        }
+
+        return Collections.emptyList()
     }
 
     /**

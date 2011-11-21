@@ -23,7 +23,6 @@ class UtilTests extends GroovyTestCase {
         assertEquals('windows-1251', Util.extractCharsetName("charset=windows-1251"))
 
         assertNull(Util.extractCharsetName("image/plain"))
-        assertNull(Util.extractCharsetName(null))
         assertNull(Util.extractCharsetName(""))
     }
 

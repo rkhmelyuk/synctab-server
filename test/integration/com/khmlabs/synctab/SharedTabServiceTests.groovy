@@ -19,7 +19,9 @@ class SharedTabServiceTests extends GroovyTestCase {
     void setUp() {
         super.setUp()
 
-        user = userService.getUserByEmail('ruslan@khmelyuk.com')
+        user = new User()
+        user.email = "shared-tab-service-tests@synctabapp.com"
+        userService.registerUser(user, "password")
     }
 
     void tearDown() {
