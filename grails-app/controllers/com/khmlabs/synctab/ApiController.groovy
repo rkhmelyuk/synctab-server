@@ -1,5 +1,8 @@
 package com.khmlabs.synctab
 
+import com.khmlabs.synctab.tab.condition.AfterTabConditions
+import com.khmlabs.synctab.tab.condition.BeforeTabConditions
+import com.khmlabs.synctab.tab.condition.RecentTabConditions
 import grails.converters.JSON
 
 class ApiController {
@@ -28,7 +31,6 @@ class ApiController {
      */
     boolean auth() {
         log.info "API: $actionName $params"
-        println "API: $actionName $params"
 
         def token = params.token
         def user = authService.getUserByToken(token)
@@ -163,7 +165,7 @@ class ApiController {
         tab.device = params.device?.trim()
         tab.date = new Date()
 
-        def status = sharedTabService.addSharedTab(tab)
+        def status = sharedTabService.addSharedTab(tab) != null
         render([status: status] as JSON)
     }
 
@@ -245,8 +247,9 @@ class ApiController {
             return
         }
 
-        def user = session.user
-        def tabs = sharedTabService.getLastSharedTabs(user, LAST_TABS_NUM)
+        User user = session.user
+        RecentTabConditions conditions = new RecentTabConditions(user, null, LAST_TABS_NUM)
+        List<SharedTab> tabs = sharedTabService.getRecentSharedTabs(conditions)
 
         render([status: true, tabs: prepareTabs(tabs)] as JSON)
     }
@@ -266,7 +269,8 @@ class ApiController {
 
         User user = session.user
         Date date = getDate(id, timestamp)
-        List<SharedTab> tabs = sharedTabService.getSharedTabsAfter(user, date)
+        AfterTabConditions conditions = new AfterTabConditions(user, null, date)
+        List<SharedTab> tabs = sharedTabService.getSharedTabsAfter(conditions)
 
         render([status: true, tabs: prepareTabs(tabs)] as JSON)
     }
@@ -291,7 +295,8 @@ class ApiController {
         final List<SharedTab> tabs
         if (sharedTab != null) {
             Date date = sharedTab.date
-            tabs = sharedTabService.getSharedTabsBefore(user, date, max)
+            BeforeTabConditions conditions = new BeforeTabConditions(user, null, date, max)
+            tabs = sharedTabService.getSharedTabsBefore(conditions)
         }
         else {
             tabs = Collections.emptyList()
@@ -316,8 +321,9 @@ class ApiController {
             date = new Date() - RECENT_DAYS_NUM
         }
 
-        final User user = session.user
-        List<SharedTab> tabs = sharedTabService.getSharedTabsAfter(user, date)
+        User user = session.user
+        AfterTabConditions conditions = new AfterTabConditions(user, null, date)
+        List<SharedTab> tabs = sharedTabService.getSharedTabsAfter(conditions)
 
         render([status: true, tabs: prepareTabs(tabs)] as JSON)
     }

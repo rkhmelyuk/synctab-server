@@ -2,14 +2,24 @@ package com.khmlabs.synctab
 
 import com.khmlabs.synctab.helper.PageInfoRetriever
 import com.khmlabs.synctab.helper.UrlInfo
+import com.khmlabs.synctab.tab.condition.AfterTabConditions
+import com.khmlabs.synctab.tab.condition.BeforeTabConditions
+import com.khmlabs.synctab.tab.condition.RecentTabConditions
+import com.khmlabs.synctab.tab.condition.TabConditions
+import com.google.common.collect.Lists
 
+/**
+ * Manage work with SharedTabs.
+ *
+ * @author Ruslan Khmelyuk
+ */
 class SharedTabService {
 
     static transactional = false
 
     MemcachedService memcachedService
 
-    boolean addSharedTab(SharedTab sharedTab) {
+    SharedTab addSharedTab(SharedTab sharedTab) {
         def tab = sharedTab
         fillLinkDetails(tab)
 
@@ -18,10 +28,13 @@ class SharedTabService {
         if (found) {
             found.date = new Date()
             found.title = tab.title
+            found.link = tab.link
+            found.favicon = tab.favicon
+            found.tag = tab.tag
             tab = found
         }
 
-        return saveTab(tab)
+        return (saveTab(tab) ? tab : null)
     }
 
     /**
@@ -65,44 +78,40 @@ class SharedTabService {
 
     /**
      * Gets the list of shared tabs since specified date for specified user.
-     * @param user the user to get shared tabs for.
-     * @param since the date to get shared tabs after.
+     *
+     * @param conditions the search conditions.
      * @return the list of found shared tabs, if nothing is found than list is empty.
      */
-    List<SharedTab> getSharedTabsAfter(User user, Date since) {
-        SharedTab.findAllByUserAndDateGreaterThan(user, since)
+    List<SharedTab> getSharedTabsAfter(AfterTabConditions conditions) {
+        findByConditions(conditions)
     }
 
     /**
      * Get n shared tabs before specified date for specified user.
      *
-     * @param user the user to get shared tabs for.
-     * @param before the date to get shared tabs before.
-     * @param max the max number of shared tabs to return.
+     * @param conditions the search conditions.
      * @return the list of found shared tabs, if nothing is found then list is empty.
      */
-    List<SharedTab> getSharedTabsBefore(User user, Date before, int max) {
-        SharedTab.findAllByUserAndDateLessThan(user, before, [max: max])
+    List<SharedTab> getSharedTabsBefore(BeforeTabConditions conditions) {
+        findByConditions(conditions)
     }
 
     /**
      * Get n recent shared tabs for user.
      *
-     * @param user the user to get shared tabs for.
-     * @param max the number of recent tabs to return.
+     * @param conditions the search conditions.
      * @return the list of found recent tabs, if nothing found then list is empty.
      */
-    List<SharedTab> getLastSharedTabs(User user, int max) {
-        // FIXME - Next line is not working
-        // TODO - need to get count, and the offset,
-        // SharedTab.findAllByUser(user, [max: max, sort: 'created', order: 'desc'])
+    List<SharedTab> getRecentSharedTabs(RecentTabConditions conditions) {
+        List<SharedTab> tabs = findByConditions(conditions)
 
-        def users = SharedTab.findAllByUser(user)
-        int size = users.size()
+        int size = tabs.size()
+        int max = conditions.max
         if (size > max) {
-            return new ArrayList<SharedTab>(users.subList(size - max, size))
+            tabs = tabs.subList(size - max, size)
+            return Lists.newArrayList(tabs)
         }
-        return users
+        return tabs
     }
 
     /**
@@ -141,20 +150,17 @@ class SharedTabService {
         return false
     }
 
-    boolean saveTab(SharedTab tab) {
+    /**
+     * Update the existing tab.
+     * @param tab the tab to update.
+     * @return true if tab was updated, otherwise false.
+     */
+    boolean updateTab(SharedTab tab) {
         if (!tab.id) {
             return false
         }
 
-        return tab.save(flush: true) != null
-    }
-
-    /**
-     * Removes user shared tabs.
-     * @param user the user to remove tabs for.
-     */
-    void removeUserTabs(User user) {
-        SharedTab.executeUpdate("delete SharedTab where user = ?", [user])
+        return saveTab(tab)
     }
 
     /**
@@ -164,5 +170,16 @@ class SharedTabService {
      */
     List<SharedTab> getSharedTabs(User user) {
         SharedTab.findAllByUser(user)
+    }
+
+    private boolean saveTab(SharedTab tab) {
+        return tab.save(flush: true) != null
+    }
+
+    private List<SharedTab> findByConditions(TabConditions conditions) {
+        def builder = SharedTab.createCriteria()
+        return builder.listDistinct {
+            conditions.fillCriteria(builder)
+        }
     }
 }
