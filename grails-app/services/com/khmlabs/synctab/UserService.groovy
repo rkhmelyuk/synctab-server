@@ -1,10 +1,15 @@
 package com.khmlabs.synctab
 
+/**
+ * Manages work with users.
+ */
 class UserService {
 
     static transactional = false
 
     TagService tagService
+    AuthService authService
+    SharedTabService sharedTabService
 
     boolean registerUser(User user, String password) {
         if (user && password) {
@@ -31,6 +36,16 @@ class UserService {
         }
 
         return false
+    }
+
+    /**
+     * Remove the user with all related data.
+     * @param user the user to remove.
+     */
+    void removeUser(User user) {
+        tagService.removeUserTags(user)
+        authService.removeUserAuth(user)
+        sharedTabService.removeUserTabs(user)
     }
 
     User getUser(String id) {
@@ -67,11 +82,16 @@ class UserService {
         User.findAll()
     }
 
-    private String hashPassword(String password, String salt) {
-        return (password + salt).encodeAsSHA1()
-    }
-
+    /**
+     * Check if such email is not used yet.
+     * @param email the email to check.
+     * @return true if email isn't in the system yet.
+     */
     boolean freeEmail(String email) {
         return User.countByEmail(email) == 0
+    }
+
+    private String hashPassword(String password, String salt) {
+        return (password + salt).encodeAsSHA1()
     }
 }

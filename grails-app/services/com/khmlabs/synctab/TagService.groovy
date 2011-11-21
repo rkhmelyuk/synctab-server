@@ -42,12 +42,30 @@ class TagService {
     }
 
     /**
+     * Remove all tags for specified user.
+     * @param user the user to remove tags for.
+     */
+    void removeUserTags(User user) {
+        Tag.executeUpdate("delete Tag where user = ?", [user])
+    }
+
+    /**
      * Gets the list of user tags.
      * @param user the user to get tags for.
      * @return the list of user tags.
      */
     List<Tag> getTags(User user) {
         return Tag.findAllByUser(user)
+    }
+
+    /**
+     * Gets the tag by its id.
+     * @param id the id to find tag by.
+     * @return the found tag or null.
+     */
+    Tag getTagById(String id) {
+        //noinspection GroovyAssignabilityCheck
+        Tag.get(id)
     }
 
     /**

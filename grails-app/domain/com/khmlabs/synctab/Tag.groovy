@@ -30,4 +30,8 @@ class Tag {
         name nullable: false, blank: false
         created nullable: false
     }
+
+    String toString() {
+        "Tag[id=$id,name=$name]"
+    }
 }

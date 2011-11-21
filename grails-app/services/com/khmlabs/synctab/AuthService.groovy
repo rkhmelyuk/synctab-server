@@ -49,4 +49,12 @@ class AuthService {
 
         return null
     }
+
+    /**
+     * Delete user AuthTokens.
+     * @param user the user to get auth token for.
+     */
+    void removeUserAuth(User user) {
+        AuthToken.executeUpdate("delete AuthToken where user = ?", [user])
+    }
 }

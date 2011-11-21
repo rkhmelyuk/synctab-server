@@ -150,6 +150,14 @@ class SharedTabService {
     }
 
     /**
+     * Removes user shared tabs.
+     * @param user the user to remove tabs for.
+     */
+    void removeUserTabs(User user) {
+        SharedTab.executeUpdate("delete SharedTab where user = ?", [user])
+    }
+
+    /**
      * Gets the list of all shared tabs for specified user.
      * @param user the user to get shared tabs for.
      * @return the list of user shared tabs.
