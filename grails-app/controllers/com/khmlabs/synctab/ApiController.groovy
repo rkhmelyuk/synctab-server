@@ -162,6 +162,7 @@ class ApiController {
         tab.user = session.user
         tab.title = params.title?.trim()
         tab.link = params.link?.trim()
+        tab.device = params.device?.trim()
         tab.date = new Date()
         tab.tag = getTagFromRequest()
 
@@ -187,7 +188,7 @@ class ApiController {
             return
         }
 
-        boolean status
+        boolean status = true
         SharedTab tab = sharedTabService.getSharedTab(id)
         if (tab != null) {
             if (tab.user.id != session.user.id) {
@@ -197,14 +198,10 @@ class ApiController {
 
             try {
                 sharedTabService.remove(tab)
-                status = true
             }
             catch (Exception e) {
                 status = false
             }
-        }
-        else {
-            status = true
         }
 
         render([status: status] as JSON)
@@ -387,7 +384,8 @@ class ApiController {
                     id: each.id,
                     title: each.title,
                     link: each.link,
-                    tag: each.tag?.name,
+                    device: each.device,
+                    tag: each.tag?.id,
                     ts: each.date.time,
                     favicon: each.favicon
             ]
@@ -431,7 +429,7 @@ class ApiController {
         final User user = session.user
         List<Tag> tags = tagService.getTags(user)
 
-        render([status: true, tabs: prepareTags(tags)] as JSON)
+        render([status: true, tags: prepareTags(tags)] as JSON)
     }
 
     /**

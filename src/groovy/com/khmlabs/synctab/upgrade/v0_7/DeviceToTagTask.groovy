@@ -21,6 +21,7 @@ class DeviceToTagTask implements UpgradeTask {
             List<SharedTab> tabs = sharedTabService.getSharedTabs(user)
             for (SharedTab tab : tabs) {
                 tab.tag = androidTag
+                tab.device = "Android"
                 if (!sharedTabService.updateTab(tab)) {
                     return false
                 }

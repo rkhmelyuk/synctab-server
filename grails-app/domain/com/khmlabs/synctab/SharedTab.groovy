@@ -14,15 +14,17 @@ class SharedTab {
 
     String title
     String link
+    String device
     String favicon
     Date date
 
     static mapping = {
         link field: 'link', index: true
         user field: 'userId', index: true
-        title filed: 'title'
+        title field: 'title'
+        device field: 'device'
         favicon field: 'favicon'
-        tag field: 'tag'
+        tag field: 'tag', index: true
         date field: 'date', index: true
 
         version false
@@ -34,20 +36,15 @@ class SharedTab {
     static constraints = {
         tag nullable: true
         user nullable: false
+        device nullable: false, blank: false
         title nullable: true, blank: true
         link nullable: false, blank: false
         favicon nullable: true, blank: true
         date nullable: false
     }
 
-    static transients = ['device']
-
     String toString() {
         "SharedTab[$id,$link,$date]"
-    }
-
-    String getDevice() {
-        tag?.name
     }
 
 }
