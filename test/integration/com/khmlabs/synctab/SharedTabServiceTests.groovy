@@ -37,6 +37,7 @@ class SharedTabServiceTests extends GroovyTestCase {
         SharedTab tab = new SharedTab()
         tab.link = "http://sycntab.khmelyuk.com"
         tab.user = user
+        tab.device = "Android"
         tab.date = new Date()
 
         tab = sharedTabService.addSharedTab(tab)
@@ -56,6 +57,7 @@ class SharedTabServiceTests extends GroovyTestCase {
         tab.link = "http://www.khmelyuk.com"
         tab.tag = androidTag
         tab.user = user
+        tab.device = "Android"
         tab.date = new Date()
 
         tab = sharedTabService.addSharedTab(tab)
@@ -181,6 +183,7 @@ class SharedTabServiceTests extends GroovyTestCase {
         SharedTab tab = new SharedTab()
         tab.link = link
         tab.tag = getTag(tagName)
+        tab.device = "Chrome"
         tab.user = user
         tab.date = date
 

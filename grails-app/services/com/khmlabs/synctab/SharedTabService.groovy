@@ -29,6 +29,7 @@ class SharedTabService {
             found.date = new Date()
             found.title = tab.title
             found.link = tab.link
+            found.device = tab.device
             found.favicon = tab.favicon
             found.tag = tab.tag
             tab = found
