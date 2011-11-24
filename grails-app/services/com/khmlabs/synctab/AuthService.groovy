@@ -6,7 +6,7 @@ class AuthService {
 
     static transactional = false
 
-    static long MAX_TOKEN_TIME = 1000 * 60 * 60 * 24 * 14 // 2 weeks
+    static long MAX_TOKEN_TIME = 1000 * 60 * 60 * 24 * 31 // 1 month
     static int TOKEN_KEY_LENGTH = 40
 
     UserService userService
