@@ -31,6 +31,7 @@ class ApiController {
      */
     boolean auth() {
         log.info "API: $actionName $params"
+        println  "API: $actionName $params"
 
         def token = params.token
         def user = authService.getUserByToken(token)

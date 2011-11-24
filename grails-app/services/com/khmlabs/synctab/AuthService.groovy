@@ -39,11 +39,15 @@ class AuthService {
         if (key) {
             AuthToken token = getAuthToken(key)
             if (token != null) {
+                /*
                 if (token.endTimestamp > System.currentTimeMillis()) {
                     return userService.getUser(token.userId)
                 }
 
                 discard(token)
+                */
+
+                return userService.getUser(token.userId)
             }
         }
 
