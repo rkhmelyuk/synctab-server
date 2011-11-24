@@ -8,7 +8,7 @@ import grails.converters.JSON
 class ApiController {
 
     private static final int LAST_TABS_NUM = 20
-    private static final int RECENT_DAYS_NUM = 2
+    private static final int RECENT_DAYS_NUM = 1
 
     TagService tagService
     AuthService authService
