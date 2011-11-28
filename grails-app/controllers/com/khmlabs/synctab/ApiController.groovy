@@ -450,6 +450,60 @@ class ApiController {
         render([status: status] as JSON)
     }
 
+    /**
+     * Rename user tag.
+     *
+     * Accepts two parameters:
+     *  - id: the id of the tag to rename,
+     *  - name: the new tag name.
+     */
+    def renameTag = {
+        if (request.method != 'POST') {
+            response.sendError 405
+            return
+        }
+
+        Tag tag = getTagById()
+        boolean status = false
+        String name = params.name?.trim()
+
+        if (tag && name) {
+            status = tagService.renameTag(tag, name)
+        }
+
+        render([status: status] as JSON)
+    }
+
+    /**
+     * Remove tag. No matter if it was used before or not.
+     */
+    def removeTag = {
+        if (request.method != 'POST') {
+            response.sendError 405
+            return
+        }
+
+        Tag tag = getTagById()
+        boolean status = false
+
+        if (tag) {
+            status = tagService.removeTag(tag)
+        }
+
+        render([status: status] as JSON)
+    }
+
+    private Tag getTagById() {
+        final String tagId = params.id
+
+        if (tagId) {
+            final User user = session.user
+            return tagService.getUserTagById(user, tagId)
+        }
+
+        return null
+    }
+
     private List<Map> prepareTags(List<Tag> tags) {
         if (!tags) {
             return Collections.emptyList()

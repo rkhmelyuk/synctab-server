@@ -55,6 +55,25 @@ class TagServiceTests extends GroovyTestCase {
         assertEquals "Johny", found2.name
     }
 
+    void testRemoveTag() {
+        Tag tag = new Tag()
+        tag.user = user
+        tag.name = "Test"
+
+        assertTrue tagService.addTag(tag)
+
+        Tag found = tagService.getTagById(tag.id)
+
+        assertNotNull found
+        assertEquals "Test", found.name
+
+        assertTrue tagService.removeTag(found)
+
+        Tag found2 = tagService.getTagById(tag.id)
+
+        assertNull found2
+    }
+
     void testFindUserTags() {
         User user = new User()
         user.email = "test-find-user-tags@synctabapp.com"

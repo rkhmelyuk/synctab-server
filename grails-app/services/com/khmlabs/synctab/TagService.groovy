@@ -42,6 +42,20 @@ class TagService {
     }
 
     /**
+     * Remove the tab.
+     *
+     * @param tag the tag to remove.
+     * @return true if tag was removed.
+     */
+    boolean removeTag(Tag tag) {
+        if (tag) {
+            tag.delete(flush: true)
+            return true
+        }
+        return false
+    }
+
+    /**
      * Gets the list of user tags.
      * @param user the user to get tags for.
      * @return the list of user tags.

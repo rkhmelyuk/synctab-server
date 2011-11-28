@@ -142,7 +142,7 @@ class SharedTabServiceTests extends GroovyTestCase {
 
         assertNotNull sharedTabs
         assertEquals 1, sharedTabs.size()
-        assertTrue sharedTabs.any { it.link == "http://blog.khmelyuk.com" }
+        assertTrue sharedTabs.any { it.link == "http://synctab.khmelyuk.com" }
     }
 
     void testGetRecentTabs() {
