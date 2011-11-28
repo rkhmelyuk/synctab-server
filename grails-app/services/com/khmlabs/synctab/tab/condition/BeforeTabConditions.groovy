@@ -26,6 +26,7 @@ class BeforeTabConditions extends TabConditions {
             builder.lt 'date', before
         }
 
+        builder.order("date", "desc")
         builder.maxResults(max)
     }
 }
