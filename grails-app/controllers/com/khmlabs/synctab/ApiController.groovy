@@ -435,6 +435,11 @@ class ApiController {
 
     /**
      * Add new user tag.
+     * Accepts only 'name' parameter.
+     *
+     * Returns:
+     *  - status: "true" if was added, otherwise "false".
+     *  - id: the id of added tag, if it was added.
      */
     def addTag = {
         if (request.method != 'POST') {
@@ -447,7 +452,7 @@ class ApiController {
         tag.name = params.name?.trim()
 
         boolean status = tagService.addTag(tag)
-        render([status: status] as JSON)
+        render([status: status, id: tag.id] as JSON)
     }
 
     /**
@@ -456,6 +461,9 @@ class ApiController {
      * Accepts two parameters:
      *  - id: the id of the tag to rename,
      *  - name: the new tag name.
+     *
+     * Returns:
+     *  - status: "true" if was renamed, otherwise "false".
      */
     def renameTag = {
         if (request.method != 'POST') {
@@ -476,6 +484,9 @@ class ApiController {
 
     /**
      * Remove tag. No matter if it was used before or not.
+     *
+     * Returns:
+     *  - status: "true" if was removed, otherwise "false".
      */
     def removeTag = {
         if (request.method != 'POST') {
