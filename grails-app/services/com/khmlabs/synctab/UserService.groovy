@@ -1,5 +1,9 @@
 package com.khmlabs.synctab
 
+import com.prutsoft.core.KeyGenerator
+import grails.plugin.mail.MailService
+import org.codehaus.groovy.grails.commons.GrailsApplication
+
 /**
  * Manages work with users.
  */
@@ -9,7 +13,9 @@ class UserService {
 
     TagService tagService
     AuthService authService
+    MailService mailService
     SharedTabService sharedTabService
+    GrailsApplication grailsApplication
 
     boolean registerUser(User user, String password) {
         if (user && password) {
@@ -17,7 +23,7 @@ class UserService {
             user.active = true
             user.password = hashPassword(password, user.email)
 
-            if (user.save() != null) {
+            if (user.save(flush: true) != null) {
                 tagService.addDefaultTags(user)
                 return true
             }
@@ -30,8 +36,9 @@ class UserService {
         if (newPassword && user) {
             user = getUser(user.id)
             if (user) {
+                user.passwordResetKey = ''
                 user.password = hashPassword(newPassword, user.email)
-                return user.save() != null
+                return user.save(flush: true) != null
             }
         }
 
@@ -79,6 +86,48 @@ class UserService {
      */
     boolean freeEmail(String email) {
         return User.countByEmail(email) == 0
+    }
+
+    /**
+     * Sends a password reset email. If there is no such user with specified email, then nothing is send but false is returned.
+     * @param email the email to send a password reset email to.
+     * @return true if email was send, otherwise false.
+     */
+    boolean sendPasswordResetEmail(String email) {
+        def user = getUserByEmail(email)
+        if (user == null) {
+            // if user by specified email is not found, then returns false
+            return false
+        }
+
+        // generates a reset key
+        user.passwordResetKey = generatePasswordResetKey()
+        if (user.save(flush: true) == null) {
+            return false
+        }
+
+        // and now sends an email
+
+        def toAddress = user.email
+        def fromAddress = grailsApplication.config.synctab.mail.resetPassword.from.toString()
+        def subjectStr = grailsApplication.config.synctab.mail.resetPassword.subject.toString()
+
+        mailService.sendMail {
+            from fromAddress
+            to toAddress
+            subject subjectStr
+            body view: '/mail/resetPassword', model: [user: user]
+        }
+
+        return true
+    }
+
+    User getUserByPasswordResetKey(String key) {
+        User.findByPasswordResetKey(key)
+    }
+
+    private String generatePasswordResetKey() {
+        KeyGenerator.generateSimpleKey(50)
     }
 
     private String hashPassword(String password, String salt) {

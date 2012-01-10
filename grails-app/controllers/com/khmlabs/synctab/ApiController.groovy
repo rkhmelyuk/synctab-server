@@ -17,7 +17,7 @@ class ApiController {
 
     def beforeInterceptor = [
             action: this.&auth,
-            except: ['register', 'authorize']]
+            except: ['register', 'authorize', 'resetPassword']]
 
     /**
      * The interceptor for API, that requires an authToken.
@@ -139,6 +139,27 @@ class ApiController {
         if (tokenKey) {
             AuthToken token = authService.getAuthToken(tokenKey)
             status = authService.discard(token)
+        }
+        render([status: status] as JSON)
+    }
+
+    /**
+     * Gets the user email address and send a reset password link to it.
+     *
+     * Returns:
+     *  - status: "true" if password reset email was sent successfully, otherwise "false".
+     */
+    def resetPassword = {
+        if (request.method != 'POST') {
+            response.sendError 405
+            return
+        }
+
+        final String email = params.email
+
+        boolean status = false
+        if (email) {
+            status = userService.sendPasswordResetEmail(email)
         }
         render([status: status] as JSON)
     }

@@ -6,6 +6,7 @@ class User {
 
     String email
     String password
+    String passwordResetKey
 
     long created
     boolean active
@@ -15,6 +16,7 @@ class User {
         password filed: 'password'
         created field: 'created'
         active field: 'active'
+        passwordResetKey field: 'passwordResetKey', index: true
 
         version false
         cache true
@@ -23,5 +25,6 @@ class User {
     static constraints = {
         email nullable: false, blank: false, maxSize: 500
         password nullable: false, blank: false, maxSize: 500
+        passwordResetKey nullable: true, blank: true, maxSize: 50
     }
 }

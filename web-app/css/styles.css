@@ -1,0 +1,86 @@
+
+* { margin: 0; padding: 0; }
+
+body { background: url("../images/bg.png"); color: #333; font: 13px 'Alike',arial, freesans,clean,sans-serif; }
+
+div.error { color: #cc0000; font-size: 1.2em; padding: 10px 0; text-align: center; }
+div.success { color: #48802c; font-size: 1.2em; padding: 10px 0; text-align: center;  }
+
+h1 { padding: 15px 0 15px; font-size: 22px; color: #444444; }
+h1 span, h2 span { color: #777777; }
+
+a { color: #073594; text-decoration: none; }
+a:hover { color: #073594; text-decoration: underline; }
+
+p { padding: 7px 0;}
+.clear { clear: both; }
+
+label { color: #555555; padding: 4px 0; }
+label.error { color: #cc0000; font-size: 0.9em; }
+input[type="text"], input[type="password"] {
+	border: 1px solid #dfdfdf;
+	line-height: 22px; color: #222222;
+	font-size: 16px;
+	width: 280px; padding: 5px;
+	border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px;
+}
+input[type="text"]:hover, input[type="password"]:hover { border: 1px solid #bbbbbb; font-size: 1.2em; }
+
+form label { display: block; }
+form label span { font-size: 0.8em; font-style: italic; line-height: 15px; }
+form input[type=text] { width: 280px; }
+form input[type=password] { width: 280px; }
+
+#content {
+	width: 280px; height: auto; padding: 15px;
+    margin: 5% auto 0 auto;
+	background: #ffffff;
+
+	border-radius: 10px; -webkit-border-radius: 10px; -moz-border-radius: 10px;
+	border: 1px solid #e0e0e0; box-shadow: 0 1px 10px #afafaf;
+}
+
+#content #formContent { width: 280px; margin: 0 auto; }
+
+#footer { font-size: 12px; padding: 20px 0 0 0; color: #777777; }
+#footer #left { float: left; }
+#footer #right { float: right; }
+
+#footer a { color: #444444; text-decoration: none; }
+#footer a:hover { color: #222222; text-decoration: underline; }
+#footer a strong { color: #58852E;}
+#footer a:hover strong { color: #58852E; text-decoration: underline; }
+
+.mainButton {
+    float: right;
+    margin: 10px 0;
+    cursor: pointer;
+    padding: 9px 40px;
+    box-shadow: 1px 1px 2px #aaaaaa;
+    border: none;
+    font: 17px 'Alike', freesans, clean, sans-serif;
+    line-height: 20px;
+    color: white;
+    text-shadow: 0 1px 1px #222222;
+    border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px;
+
+    background-color: #3F6ED4;
+    background: -webkit-gradient(linear, left top, left bottom, from(#3F6ED4), to(#2B55AD));
+}
+
+.mainButton:hover {
+    background-color: #2B55AD;
+    background: -webkit-gradient(linear, left top, left bottom, from(#2B55AD), to(#073594));
+}
+
+.mainButton:active {
+    background-color: #073594;
+    background: -webkit-gradient(linear, left top, left bottom, from(#073594), to(#2253BA));
+}
+
+@font-face {
+  	font-family: 'Alike';
+  	font-style: normal;
+  	font-weight: normal;
+  	src: local('Alike'), local('Alike-Regular'), url('../fonts/Alike.woff') format('woff');
+}

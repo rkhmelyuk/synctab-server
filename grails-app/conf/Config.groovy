@@ -51,13 +51,13 @@ grails.spring.bean.packages = []
 // set per-environment serverURL stem for creating absolute links
 environments {
     production {
-        grails.serverURL = "http://www.changeme.com"
+        grails.serverURL = "http://synctabapp.khmelyuk.com"
     }
     development {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://localhost:8080"
     }
     test {
-        grails.serverURL = "http://localhost:8080/${appName}"
+        grails.serverURL = "http://localhost:8080"
     }
 
 }
@@ -90,6 +90,14 @@ log4j = {
 }
 
 
+grails.mail.default.from = '"SyncTab" <noreply@synctab.khmelyuk.com>'
+
 synctab {
     memcachedServers = '127.0.0.1:11211'
+    googleTrackingCode = 'UA-4438157-8'
+
+    mail {
+        resetPassword.from = '"SyncTab" <noreply@synctab.khmelyuk.com>'
+        resetPassword.subject = 'Confirm Password Reset'
+    }
 }
