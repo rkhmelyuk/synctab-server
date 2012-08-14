@@ -35,7 +35,7 @@ class SharedTabServiceTests extends GroovyTestCase {
 
     void testAddSharedTab() {
         SharedTab tab = new SharedTab()
-        tab.link = "http://sycntab.khmelyuk.com"
+        tab.link = "http://synctab.khmelyuk.com"
         tab.user = user
         tab.device = "Android"
         tab.date = new Date()
@@ -43,7 +43,7 @@ class SharedTabServiceTests extends GroovyTestCase {
         tab = sharedTabService.addSharedTab(tab)
 
         assertNotNull tab
-        assertEquals "http://sycntab.khmelyuk.com", tab.link
+        assertEquals "http://synctab.khmelyuk.com", tab.link
         assertEquals user.id, tab.user.id
 
         assertNull tab.tag

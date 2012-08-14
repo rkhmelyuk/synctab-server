@@ -1,6 +1,7 @@
 package com.khmlabs.synctab
 
 import com.khmlabs.synctab.tag.DefaultTags
+import org.apache.commons.lang.RandomStringUtils
 
 /**
  * Tests for {@link UserService}
@@ -77,14 +78,16 @@ class UserServiceTests extends GroovyTestCase {
     }
 
     void testFreeEmail() {
-        assertTrue userService.freeEmail("test-free-email@synctabapp.com")
+        String testEmail = RandomStringUtils.randomAlphabetic(10) + "@synctabapp.com"
+
+        assertTrue userService.isEmailFree(testEmail)
 
         // register a new user with specified password
-        User user = new User(email: "test-free-email@synctabapp.com")
+        User user = new User(email: testEmail)
         assertTrue userService.registerUser(user, "password")
 
         // check that registered password is not free now
-        assertFalse userService.freeEmail("test-free-email@synctabapp.com")
+        assertFalse userService.isEmailFree(testEmail)
 
     }
 }

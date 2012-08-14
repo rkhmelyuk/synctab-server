@@ -11,10 +11,11 @@ class UserService {
 
     static transactional = false
 
+    static int EMAIL_CACHE_EXPIRATION = 5 * 60 // 5 mins
+
     TagService tagService
-    AuthService authService
     MailService mailService
-    SharedTabService sharedTabService
+    MemcachedService memcachedService
     GrailsApplication grailsApplication
 
     boolean registerUser(User user, String password) {
@@ -25,11 +26,13 @@ class UserService {
 
             if (user.save(flush: true) != null) {
                 tagService.addDefaultTags(user)
+
+                memcachedService.putValue(user.email, true, EMAIL_CACHE_EXPIRATION)
                 return true
             }
         }
-        return false
 
+        return false
     }
 
     boolean changePassword(User user, String newPassword) {
@@ -84,8 +87,9 @@ class UserService {
      * @param email the email to check.
      * @return true if email isn't in the system yet.
      */
-    boolean freeEmail(String email) {
-        return User.countByEmail(email) == 0
+    boolean isEmailFree(String email) {
+        def value = memcachedService.getValue(email)
+        return value ? false : User.countByEmail(email) == 0
     }
 
     /**

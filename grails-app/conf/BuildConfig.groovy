@@ -7,7 +7,7 @@ grails.project.dependency.resolution = {
     // inherit Grails' default dependencies
     inherits("global") {
         // uncomment to disable ehcache
-        // excludes 'ehcache'
+        excludes 'guava'
     }
 
     log "warn" // log level of Ivy resolver, either 'error', 'warn', 'info', 'debug' or 'verbose'
@@ -20,13 +20,13 @@ grails.project.dependency.resolution = {
         mavenLocal()
         mavenCentral()
 
+        mavenRepo "http://files.couchbase.com/maven2/"
     }
 
     dependencies {
 
         runtime 'net.sourceforge.htmlcleaner:htmlcleaner:2.2'
-        runtime 'com.google.code.gson:gson:1.7.1'
-
-        runtime 'spy:memcached:2.5'
+        runtime 'com.google.code.gson:gson:2.2.2'
+        runtime 'spy:spymemcached:2.8.2'
     }
 }

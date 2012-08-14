@@ -30,8 +30,9 @@ class ApiController {
      * @return whether to continue request processing.
      */
     boolean auth() {
-        log.info "API: $actionName $params"
-        println  "API: $actionName $params"
+        if (log.traceEnabled) {
+            log.trace("API: $actionName $params")
+        }
 
         def token = params.token
         def user = authService.getUserByToken(token)
@@ -70,7 +71,7 @@ class ApiController {
         else if (!Util.isEmail(email)) {
             msg = g.message(code: 'user.email.email.invalid')
         }
-        else if (!userService.freeEmail(email)) {
+        else if (!userService.isEmailFree(email)) {
             msg = g.message(code: 'user.email.duplicate')
         }
         else if (!password) {
