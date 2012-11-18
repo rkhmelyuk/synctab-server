@@ -3,7 +3,7 @@
 grails clean
 rm -rf target out
 grails compile
-grails war oaproxy.war
+grails war ROOT.war
 
-scp oaproxy.war ubuntu@server:.
-ssh ubuntu@synctabapp.khmelyuk.com "~/deploy-apps.sh"
+scp ROOT.war website:.
+ssh website "~/deploy-synctab.sh"
