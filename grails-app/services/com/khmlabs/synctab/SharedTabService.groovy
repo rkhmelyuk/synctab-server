@@ -6,6 +6,7 @@ import com.khmlabs.synctab.helper.UrlInfo
 import com.khmlabs.synctab.tab.condition.AfterTabConditions
 import com.khmlabs.synctab.tab.condition.BeforeTabConditions
 import com.khmlabs.synctab.tab.condition.RecentTabConditions
+import com.khmlabs.synctab.tab.condition.TabsPageConditions
 import com.khmlabs.synctab.tab.condition.TabConditions
 
 /**
@@ -74,6 +75,20 @@ class SharedTabService {
         }
         catch (Exception e) {
             log.error("Error to retrieve and save details about $sharedTab.link", e)
+        }
+    }
+     
+
+    /**
+     * Gets the list of shared tabs.
+     *
+     * @param conditions the search conditions.
+     * @return the list of found shared tabs, if nothing is found than list is empty.
+     */
+    List<SharedTab> getSharedTabs(TabsPageConditions conditions) {
+        def builder = SharedTab.createCriteria()
+        return builder.list(max: (int) conditions.limit, offset: (int) conditions.first) {
+            conditions.fillCriteria(builder)
         }
     }
 

@@ -4,6 +4,7 @@ import com.khmlabs.synctab.tab.condition.AfterTabConditions
 import com.khmlabs.synctab.tab.condition.BeforeTabConditions
 import com.khmlabs.synctab.tag.DefaultTags
 import com.khmlabs.synctab.tab.condition.RecentTabConditions
+import com.khmlabs.synctab.tab.condition.TabsPageConditions
 
 /**
  * Tests for {@link SharedTabService}
@@ -143,6 +144,23 @@ class SharedTabServiceTests extends GroovyTestCase {
         assertNotNull sharedTabs
         assertEquals 1, sharedTabs.size()
         assertTrue sharedTabs.any { it.link == "http://synctab.khmelyuk.com" }
+    }
+
+    /**
+     * Check that pag condition works.
+     */
+    void testGetSharedTabsByPage() {
+        createSharedTab("http://blog.khmelyuk.com", new Date() - 3)
+        createSharedTab("http://synctab.khmelyuk.com", new Date() - 2)
+        createSharedTab("http://www.khmelyuk.com", new Date())
+
+        TabsPageConditions conditions = new TabsPageConditions(user, null, 0, 2)
+        List<SharedTab> sharedTabs = sharedTabService.getSharedTabs(conditions)
+
+        assertNotNull sharedTabs
+        assertEquals 2, sharedTabs.size()
+        assertNotNull sharedTabs.any { it.link == "http://synctab.khmelyuk.com" }
+        assertNotNull sharedTabs.any { it.link == "http://www.khmelyuk.com" }
     }
 
     void testGetRecentTabs() {

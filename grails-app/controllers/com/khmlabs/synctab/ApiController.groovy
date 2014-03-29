@@ -3,6 +3,7 @@ package com.khmlabs.synctab
 import com.khmlabs.synctab.tab.condition.AfterTabConditions
 import com.khmlabs.synctab.tab.condition.BeforeTabConditions
 import com.khmlabs.synctab.tab.condition.RecentTabConditions
+import com.khmlabs.synctab.tab.condition.TabsPageConditions
 import grails.converters.JSON
 
 class ApiController {
@@ -279,6 +280,38 @@ class ApiController {
         Tag tag = getTagFromRequest()
         RecentTabConditions conditions = new RecentTabConditions(user, tag, LAST_TABS_NUM)
         List<SharedTab> tabs = sharedTabService.getRecentSharedTabs(conditions)
+
+        render([status: true, tabs: prepareTabs(tabs)] as JSON)
+    }
+
+    /**
+     * Returns the page with tabs.
+     *
+     * Input:
+     *  - first: index of first element on page, 0 based
+     *  - limit: number of tabs to return
+     *
+     * Returns:
+     *  - status: "true" if was removed, otherwise "false".
+     *  - tabs: an array of found tabs.
+     */
+    def getTabs = {
+        if (request.method != 'GET') {
+            response.sendError 405
+            return
+        }
+
+        final Long first = params.long('first')
+        final Long limit = params.long('limit')
+        if (first == null || limit == null) {
+            response.sendError 400
+            return
+        }
+
+        User user = session.user
+        Tag tag = getTagFromRequest()
+        TabsPageConditions conditions = new TabsPageConditions(user, tag, first, limit)
+        List<SharedTab> tabs = sharedTabService.getSharedTabs(conditions)
 
         render([status: true, tabs: prepareTabs(tabs)] as JSON)
     }
