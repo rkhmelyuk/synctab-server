@@ -312,8 +312,9 @@ class ApiController {
         Tag tag = getTagFromRequest()
         TabsPageConditions conditions = new TabsPageConditions(user, tag, first, limit)
         List<SharedTab> tabs = sharedTabService.getSharedTabs(conditions)
+        int count = sharedTabService.getSharedTabsCount(conditions)
 
-        render([status: true, tabs: prepareTabs(tabs)] as JSON)
+        render([status: true, tabs: prepareTabs(tabs), count: count] as JSON)
     }
 
     /**

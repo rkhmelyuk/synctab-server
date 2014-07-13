@@ -93,6 +93,19 @@ class SharedTabService {
     }
 
     /**
+     * Gets the count of shared tabs.
+     *
+     * @param conditions the search conditions.
+     * @return the count of shared tabs
+     */
+    int getSharedTabsCount(TabsPageConditions conditions) {
+        def builder = SharedTab.createCriteria()
+        return builder.count() {
+            conditions.fillCriteria(builder)
+        }
+    }
+
+    /**
      * Gets the list of shared tabs since specified date for specified user.
      *
      * @param conditions the search conditions.

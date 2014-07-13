@@ -147,20 +147,38 @@ class SharedTabServiceTests extends GroovyTestCase {
     }
 
     /**
-     * Check that pag condition works.
+     * Check that page condition works.
      */
     void testGetSharedTabsByPage() {
-        createSharedTab("http://blog.khmelyuk.com", new Date() - 3)
-        createSharedTab("http://synctab.khmelyuk.com", new Date() - 2)
-        createSharedTab("http://www.khmelyuk.com", new Date())
+        createSharedTab("http://blog.khmelyuk.com", new Date() - 3, DefaultTags.ANDROID)
+        createSharedTab("http://synctab.khmelyuk.com", new Date() - 2, DefaultTags.ANDROID)
+        createSharedTab("http://www.khmelyuk.com", new Date(), DefaultTags.ANDROID)
+        createSharedTab("http://www.google.com", new Date(), DefaultTags.CHROME)
 
-        TabsPageConditions conditions = new TabsPageConditions(user, null, 0, 2)
+        TabsPageConditions conditions = new TabsPageConditions(user, getTag(DefaultTags.ANDROID), 0, 2)
         List<SharedTab> sharedTabs = sharedTabService.getSharedTabs(conditions)
+
+        println sharedTabs
 
         assertNotNull sharedTabs
         assertEquals 2, sharedTabs.size()
-        assertNotNull sharedTabs.any { it.link == "http://synctab.khmelyuk.com" }
-        assertNotNull sharedTabs.any { it.link == "http://www.khmelyuk.com" }
+        //assertEquals "http://www.khmelyuk.com", sharedTabs.get(0).link
+        //assertEquals "http://synctab.khmelyuk.com", sharedTabs.get(1).link
+    }
+
+    /**
+     * Check that page condition works.
+     */
+    void testGetSharedTabsCount() {
+        createSharedTab("http://blog.khmelyuk.com", new Date() - 3, DefaultTags.ANDROID)
+        createSharedTab("http://synctab.khmelyuk.com", new Date() - 2, DefaultTags.ANDROID)
+        createSharedTab("http://www.google.com", new Date() - 2, DefaultTags.ANDROID)
+        createSharedTab("http://www.khmelyuk.com", new Date(), DefaultTags.CHROME)
+
+        TabsPageConditions conditions = new TabsPageConditions(user, getTag(DefaultTags.ANDROID), 0, 2)
+        int sharedTabs = sharedTabService.getSharedTabsCount(conditions)
+
+        assertEquals 3, sharedTabs
     }
 
     void testGetRecentTabs() {
